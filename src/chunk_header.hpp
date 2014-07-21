@@ -40,13 +40,12 @@ struct chunk_header
     object_size (object_size),
     mark_bitmap (num_objects)
   {
-    data = this + sizeof(chunk_header);
   }
 
   void
   mark (void* ptr)
   {
-    int i = ((char*) ptr - (char*) data) / object_size;
+    int i = ((char*) ptr - (char*) data()) / object_size;
     mark_bitmap.set (i, true);
   }
 
@@ -54,7 +53,7 @@ struct chunk_header
   bool
   is_marked (void* ptr)
   {
-    int i = ((char*) ptr - (char*) data) / object_size;
+    int i = ((char*) ptr - (char*) data()) / object_size;
     return mark_bitmap [i];
   }
 
@@ -65,13 +64,19 @@ struct chunk_header
     mark_bitmap.clear();
   }
 
+  void*
+  data()
+  {
+    return this + sizeof(*this);
+  }
+
   /*
     Does the argument point to the start of an object within this chunk.
    */
   bool
   valid (void *ptr)
   {
-    std::size_t offset = (char*)ptr - (char*)data;
+    std::size_t offset = (char*)ptr - (char*)data();
     bool in_chunk_bounds = offset < CHUNK_SIZE - sizeof(chunk_header);
     return in_chunk_bounds && offset % object_size == 0;
   }
@@ -79,5 +84,4 @@ struct chunk_header
   std::size_t object_size;
   bitmap mark_bitmap;
   std::shared_ptr<chunk_header> *back_ptr;
-  void *data;
 };

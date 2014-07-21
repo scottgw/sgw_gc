@@ -13,7 +13,7 @@ void*
 chunk_allocator::new_chunk (std::size_t object_size)
 {
   auto header = std::shared_ptr<chunk_header> (chunk_header::create (object_size));
-  auto ptr = header->data;
+  auto ptr = header->data();
 
   m_lower = std::min(m_lower, ptr);
   m_upper = std::max(m_upper, ptr);

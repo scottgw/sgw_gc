@@ -36,7 +36,7 @@ TEST(Chunk, FetchHeaderObjectPtr) {
   chunk_header* header = ch_allocator.find_chunk ((void*)ptr);
 
   ASSERT_NE (header, nullptr);
-  ASSERT_EQ (header->data, (void*)ptr);
+  ASSERT_EQ (header->data(), (void*)ptr);
 }
 
 TEST(Chunk, FetchHeaderInteriorPtr) {
