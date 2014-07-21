@@ -17,7 +17,7 @@ public:
   allocate (std::size_t size);
 
   void*
-  allocate_from_list (freelist &list);
+  allocate_from_list (std::size_t size, freelist &list);
 
 private:
   std::map<std::size_t, freelist> freelists;
@@ -26,6 +26,9 @@ private:
   const std::size_t list_objects_max_size;
 
 private:
+  void
+  add_to_freelist (std::size_t size, freelist &list);
+
   chunk_allocator ch_alloc;
 
 };
