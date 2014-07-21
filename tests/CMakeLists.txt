@@ -1,4 +1,5 @@
 set (test_names
+  alloc_test
   chunk_test
   bitmap_test
   CACHE INTERNAL ""
