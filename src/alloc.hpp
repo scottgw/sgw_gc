@@ -1,6 +1,5 @@
 #include <forward_list>
 #include <map>
-#include <cassert>
 #include <vector>
 #include <stdlib.h>
 
