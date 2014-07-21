@@ -18,17 +18,21 @@ chunk_allocator::new_chunk (std::size_t object_size)
   m_lower = std::min(m_lower, ptr);
   m_upper = std::max(m_upper, ptr);
 
+  std::shared_ptr<level2_table> table2;
   auto it = m_table1.find (TOP_BITS(ptr));
   if (it == m_table1.end())
     {
-      auto table2 = std::make_shared<level2_table>();
-      (*table2) [MID_BITS(ptr)] = header;
+      table2 = std::make_shared<level2_table>();
       m_table1 [TOP_BITS(ptr)] = table2;
     }
   else
     {
-      (*it->second)[MID_BITS(ptr)] = header;
+      table2 = it->second;
     }
+
+  auto &table_header = (*table2) [MID_BITS(ptr)];
+  table_header = header;
+  header->back_ptr = &table_header;
 
   return ptr;
 }

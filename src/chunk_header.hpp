@@ -1,6 +1,7 @@
+#include <cassert>
+#include <memory>
 #include <new>
 #include <stdlib.h>
-#include <cassert>
 
 #include "bitmap.hpp"
 
@@ -34,7 +35,7 @@ struct chunk_header
 
     return header;
   }    
-  
+
   chunk_header (std::size_t object_size, std::size_t num_objects) :
     object_size (object_size),
     mark_bitmap (num_objects)
@@ -66,5 +67,6 @@ struct chunk_header
 
   std::size_t object_size;
   bitmap mark_bitmap;
+  std::shared_ptr<chunk_header> *back_ptr;
   void *data;
 };

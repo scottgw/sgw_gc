@@ -48,6 +48,15 @@ TEST(Chunk, FetchHeaderInteriorPtr) {
   ASSERT_EQ (header, nullptr);
 }
 
+TEST(Chunk, BackPointerIso) {
+  chunk_allocator ch_allocator;
+  void *ptr = ch_allocator.new_chunk (1 << 14);
+  chunk_header* header = ch_allocator.find_chunk (ptr);
+
+  ASSERT_NE (header, nullptr);
+  ASSERT_EQ (header->back_ptr->get(), header);
+}
+
 TEST(Chunk, MarkTrue) {
   chunk_allocator ch_allocator;
   void *ptr = ch_allocator.new_chunk (1 << 14);
