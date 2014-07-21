@@ -9,8 +9,8 @@ chunk_allocator::chunk_allocator ():
 
 }
 
-void*
-chunk_allocator::new_chunk (std::size_t object_size)
+chunk_header*
+chunk_allocator::new_chunk_header (std::size_t object_size)
 {
   auto header = std::shared_ptr<chunk_header> (chunk_header::create (object_size),
 					       chunk_header::destroy);
@@ -35,7 +35,7 @@ chunk_allocator::new_chunk (std::size_t object_size)
   table_header = header;
   header->back_ptr = &table_header;
 
-  return ptr;
+  return header.get();
 }
 
 chunk_header*

@@ -42,8 +42,14 @@ struct chunk_allocator
     return ptr >= m_lower && ptr <= m_upper;
   }
 
+  chunk_header*
+  new_chunk_header (std::size_t object_size);
+
   void*
-  new_chunk (std::size_t object_size);
+  new_chunk (std::size_t object_size)
+  {
+    return new_chunk_header(object_size)->data();
+  }
 
   chunk_header*
   find_chunk (void *ptr);
