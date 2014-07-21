@@ -13,8 +13,10 @@ alloc::allocate (std::size_t size)
     {
       return allocate_from_list (size, freelists[size]);
     }
-
-  assert (false && "Only small allocations implemented");
+  else
+    {
+      return ch_alloc.new_chunk (size);
+    }
 }
 
 void*
@@ -29,7 +31,6 @@ alloc::allocate_from_list (std::size_t size, freelist &list)
   list.pop_front();
   return result;
 }
-
 
 void
 alloc::add_to_freelist (std::size_t size, freelist &list)
