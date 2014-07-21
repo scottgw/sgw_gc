@@ -3,8 +3,8 @@
 #include "chunk.hpp"
 
 chunk_allocator::chunk_allocator ():
-  m_lower (0),
-  m_upper ((void*)(1UL << 63UL))
+  m_lower ((void*)(1UL << 63UL)),
+  m_upper (0)
 {
 
 }
