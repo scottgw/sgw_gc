@@ -12,19 +12,11 @@ chunk_allocator::chunk_allocator ():
 void*
 chunk_allocator::new_chunk (std::size_t object_size)
 {
-  std::size_t num_chunks = (object_size / CHUNK_SIZE) + 1;
-  std::size_t rounded_size = num_chunks * CHUNK_SIZE;
-  void *ptr;
-  posix_memalign (&ptr, CHUNK_SIZE, rounded_size);
-  void *upper = (char*)ptr + rounded_size;
+  auto header = std::shared_ptr<chunk_header> (chunk_header::create (object_size));
+  auto ptr = header->data;
 
   m_lower = std::min(m_lower, ptr);
-  m_upper = std::max(m_upper, upper);
-
-  auto header = std::make_shared<chunk_header>(rounded_size / object_size);
-  header->data = ptr;
-  header->object_size = object_size;
-  header->mark_bitmap.clear ();
+  m_upper = std::max(m_upper, ptr);
 
   auto it = m_table1.find (TOP_BITS(ptr));
   if (it == m_table1.end())
