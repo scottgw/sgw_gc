@@ -15,7 +15,6 @@ TEST(Chunk, AlignedLarge) {
   ASSERT_EQ (ptr & TOP_BIT_MASK, ptr);
 }
 
-
 TEST(Chunk, AllocatedInRange) {
   chunk_allocator ch_allocator;
   intptr_t ptr = (intptr_t) ch_allocator.new_chunk (1 << 13);
@@ -23,6 +22,12 @@ TEST(Chunk, AllocatedInRange) {
   ASSERT_TRUE (ch_allocator.in_range ((void*)ptr));
 }
 
+TEST(Chunk, AfterMinimumChunkNotInRange) {
+  chunk_allocator ch_allocator;
+  intptr_t ptr = (intptr_t) ch_allocator.new_chunk (1 << 13);
+
+  ASSERT_FALSE (ch_allocator.in_range ((void*)(ptr + (1 << 13))));
+}
 
 TEST(Chunk, FetchHeaderObjectPtr) {
   chunk_allocator ch_allocator;
@@ -33,7 +38,6 @@ TEST(Chunk, FetchHeaderObjectPtr) {
   ASSERT_NE (header, nullptr);
   ASSERT_EQ (header->data, (void*)ptr);
 }
-
 
 TEST(Chunk, FetchHeaderInteriorPtr) {
   chunk_allocator ch_allocator;
