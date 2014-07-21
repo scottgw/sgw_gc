@@ -14,7 +14,8 @@ chunk_allocator::new_chunk (std::size_t object_size)
 {
   std::size_t num_chunks = (object_size / CHUNK_SIZE) + 1;
   std::size_t rounded_size = num_chunks * CHUNK_SIZE;
-  void *ptr = aligned_alloc (CHUNK_SIZE, rounded_size);
+  void *ptr;
+  posix_memalign (&ptr, CHUNK_SIZE, rounded_size);
   void *upper = (char*)ptr + rounded_size;
 
   m_lower = std::min(m_lower, ptr);
