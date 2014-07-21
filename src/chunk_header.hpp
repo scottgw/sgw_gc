@@ -14,14 +14,7 @@ struct chunk_header
   chunk_header*
   create (std::size_t object_size)
   {
-    std::size_t num_chunks = (object_size / CHUNK_SIZE) + 1;
-    std::size_t rounded_size = num_chunks * CHUNK_SIZE;
-
-    std::size_t remaining_space = rounded_size - sizeof(chunk_header);
-    if (remaining_space < object_size)
-      {
-	rounded_size += CHUNK_SIZE;
-      }
+    std::size_t rounded_size = chunk_header::rounded_size (object_size);
 
     void *ptr;
     posix_memalign (&ptr, CHUNK_SIZE, rounded_size);
@@ -35,6 +28,22 @@ struct chunk_header
 
     return header;
   }    
+
+  static
+  std::size_t
+  rounded_size(std::size_t object_size)
+  {
+    std::size_t num_chunks = (object_size / CHUNK_SIZE) + 1;
+    std::size_t rounded_size = num_chunks * CHUNK_SIZE;
+
+    std::size_t remaining_space = rounded_size - sizeof(chunk_header);
+    if (remaining_space < object_size)
+      {
+	rounded_size += CHUNK_SIZE;
+      }
+
+    return rounded_size;
+  }
 
   static
   void
