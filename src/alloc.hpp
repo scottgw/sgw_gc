@@ -2,9 +2,9 @@
 #include <map>
 #include <cassert>
 #include <vector>
-
 #include <stdlib.h>
 
+#include "chunk.hpp"
 
 struct freelist : public std::forward_list<void*>
 {
@@ -25,5 +25,8 @@ private:
 
 private:
   const std::size_t list_objects_max_size;
+
+private:
+  chunk_allocator ch_alloc;
 
 };
