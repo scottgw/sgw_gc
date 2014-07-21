@@ -12,7 +12,8 @@ chunk_allocator::chunk_allocator ():
 void*
 chunk_allocator::new_chunk (std::size_t object_size)
 {
-  auto header = std::shared_ptr<chunk_header> (chunk_header::create (object_size));
+  auto header = std::shared_ptr<chunk_header> (chunk_header::create (object_size),
+					       chunk_header::destroy);
   auto ptr = header->data();
 
   m_lower = std::min(m_lower, ptr);

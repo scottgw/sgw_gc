@@ -36,6 +36,14 @@ struct chunk_header
     return header;
   }    
 
+  static
+  void
+  destroy (chunk_header* header)
+  {
+    header->~chunk_header();
+    free (header);
+  }
+
   chunk_header (std::size_t object_size, std::size_t num_objects) :
     object_size (object_size),
     mark_bitmap (num_objects)
