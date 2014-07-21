@@ -71,3 +71,42 @@ TEST(Chunk, MarkFalse) {
 
   ASSERT_FALSE (ch_allocator.is_marked (ptr));
 }
+
+TEST(Chunk, BasePtrIsValid) {
+  chunk_allocator ch_allocator;
+  void *ptr = ch_allocator.new_chunk (256);
+  auto header = ch_allocator.find_chunk (ptr);
+
+  ASSERT_NE (header, nullptr);
+  ASSERT_TRUE (header->valid (ptr));
+}
+
+
+TEST(Chunk, NextPtrIsValid) {
+  chunk_allocator ch_allocator;
+  void *ptr = ch_allocator.new_chunk (256);
+  auto header = ch_allocator.find_chunk (ptr);
+
+  ASSERT_NE (header, nullptr);
+  ASSERT_TRUE (header->valid ((char*)ptr + 256UL));
+}
+
+
+TEST(Chunk, MidObjectInvalidPtr) {
+  chunk_allocator ch_allocator;
+  void *ptr = ch_allocator.new_chunk (256);
+  auto header = ch_allocator.find_chunk (ptr);
+
+  ASSERT_NE (header, nullptr);
+  ASSERT_FALSE (header->valid ((char*)ptr + 240UL));
+}
+
+
+TEST(Chunk, OutOfChunkInvalidPtr) {
+  chunk_allocator ch_allocator;
+  void *ptr = ch_allocator.new_chunk (256);
+  auto header = ch_allocator.find_chunk (ptr);
+
+  ASSERT_NE (header, nullptr);
+  ASSERT_FALSE (header->valid ((char*)ptr + 2*4096UL));
+}

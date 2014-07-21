@@ -65,6 +65,17 @@ struct chunk_header
     mark_bitmap.clear();
   }
 
+  /*
+    Does the argument point to the start of an object within this chunk.
+   */
+  bool
+  valid (void *ptr)
+  {
+    std::size_t offset = (char*)ptr - (char*)data;
+    bool in_chunk_bounds = offset < CHUNK_SIZE - sizeof(chunk_header);
+    return in_chunk_bounds && offset % object_size == 0;
+  }
+
   std::size_t object_size;
   bitmap mark_bitmap;
   std::shared_ptr<chunk_header> *back_ptr;
