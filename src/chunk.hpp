@@ -3,7 +3,7 @@
 #include <vector>
 #include <memory>
 
-#define PTR_TOP_BITS 36UL
+#define PTR_TOP_BITS 40UL
 #define PTR_TOP_SIZE (1UL << PTR_TOP_BITS)
 #define TOP_BIT_MASK (~(PTR_TOP_BITS - 1UL))
 #define TOP_BITS(x) (((std::size_t) x) >> (PTR_MID_BITS + CHUNK_BITS))
@@ -79,6 +79,15 @@ struct chunk_header
     mark_bitmap.set (i, true);
   }
 
+
+  bool
+  is_marked (void* ptr)
+  {
+    int i = ((char*) ptr - (char*) data) / object_size;
+    return mark_bitmap [i];
+  }
+
+
   void
   clear_marks()
   {
@@ -121,6 +130,9 @@ struct chunk_allocator
 
   void
   mark(void *ptr);
+
+  bool
+  is_marked(void *ptr);
 
 private:
   level1_table m_table1;

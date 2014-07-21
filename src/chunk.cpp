@@ -1,3 +1,4 @@
+#include <cassert>
 #include "chunk.hpp"
 
 chunk_allocator::chunk_allocator ():
@@ -62,5 +63,15 @@ chunk_allocator::find_chunk (void* ptr)
 void
 chunk_allocator::mark (void* ptr)
 {
-  
+  auto header = find_chunk (ptr);
+  assert (header && "Must be a valid ptr");
+  header->mark (ptr);
+}
+
+bool
+chunk_allocator::is_marked (void* ptr)
+{
+  auto header = find_chunk (ptr);
+  assert (header && "Must be a valid ptr");
+  return header->is_marked (ptr);
 }

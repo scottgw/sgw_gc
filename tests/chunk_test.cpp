@@ -44,6 +44,22 @@ TEST(Chunk, FetchHeaderInteriorPtr) {
   ASSERT_EQ (header, nullptr);
 }
 
+TEST(Chunk, MarkTrue) {
+  chunk_allocator ch_allocator;
+  void *ptr = ch_allocator.new_chunk (1 << 14);
+
+  ch_allocator.mark (ptr);
+  ASSERT_TRUE (ch_allocator.is_marked (ptr));
+}
+
+TEST(Chunk, MarkFalse) {
+  chunk_allocator ch_allocator;
+  void *ptr = ch_allocator.new_chunk (1 << 14);
+
+  ASSERT_FALSE (ch_allocator.is_marked (ptr));
+}
+
+
 
 static
 int
