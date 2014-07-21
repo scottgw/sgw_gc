@@ -1,4 +1,5 @@
 #include <cassert>
+#include <stdlib.h>
 #include "chunk.hpp"
 
 chunk_allocator::chunk_allocator ():
