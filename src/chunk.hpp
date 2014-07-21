@@ -2,6 +2,7 @@
 #include <map>
 #include <vector>
 #include <memory>
+#include <stdlib.h>
 
 #define PTR_TOP_BITS 40UL
 #define PTR_TOP_SIZE (1UL << PTR_TOP_BITS)
