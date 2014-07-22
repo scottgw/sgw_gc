@@ -4,7 +4,7 @@
 #include <memory>
 #include <vector>
 
-#include "chunk_header.hpp"
+#include "chunk.hpp"
 
 #define PTR_TOP_BITS 40UL
 #define PTR_TOP_SIZE (1UL << PTR_TOP_BITS)
@@ -18,7 +18,7 @@
 
 struct pointer_table
 {
-  std::shared_ptr<chunk_header>&
+  std::shared_ptr<chunk>&
   operator [] (void *ptr)
   {
     std::shared_ptr<inner_map> inner;
@@ -52,8 +52,8 @@ struct pointer_table
   }
   
 private:
-  typedef std::shared_ptr<chunk_header> shared_chunk;
-
+  typedef std::shared_ptr<chunk> shared_chunk;
+  
   struct inner_map : public std::vector<shared_chunk>
   {
     inner_map ():

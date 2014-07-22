@@ -35,10 +35,10 @@ alloc::allocate_from_list (std::size_t size, freelist &list)
 void
 alloc::add_to_freelist (std::size_t size, freelist &list)
 {
-  auto header = ch_alloc.new_chunk_header (size);
-  auto base = (char*) header->data();
+  auto chnk = ch_alloc.new_chunk (size);
+  auto base = (char*) chnk->data();
 
-  for (auto p = base; p < base + chunk_header::rounded_size(size); p += size)
+  for (auto p = base; p < base + chunk::rounded_size(size); p += size)
     {
       list.push_front (p);
     }

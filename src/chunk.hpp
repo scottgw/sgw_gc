@@ -1,5 +1,5 @@
-#ifndef _CHUNK_HEADER_HPP
-#define _CHUNK_HEADER_HPP
+#ifndef _CHUNK_HPP
+#define _CHUNK_HPP
 
 #include <cassert>
 #include <memory>
@@ -11,13 +11,13 @@
 #define CHUNK_BITS 12UL
 #define CHUNK_SIZE (1 << CHUNK_BITS)
 
-struct chunk_header
+struct chunk
 {
   static
-  chunk_header*
+  chunk*
   create (std::size_t object_size)
   {
-    std::size_t rounded_size = chunk_header::rounded_size (object_size);
+    std::size_t rounded_size = chunk::rounded_size (object_size);
 
     void *ptr;
     posix_memalign (&ptr, CHUNK_SIZE, rounded_size);
@@ -27,9 +27,9 @@ struct chunk_header
 	    ? num_objects == 1 
 	    : num_objects > 1);
 
-    chunk_header *header = new (ptr) chunk_header (object_size, num_objects);
+    chunk *c = new (ptr) chunk (object_size, num_objects);
 
-    return header;
+    return c;
   }    
 
   static
@@ -39,7 +39,7 @@ struct chunk_header
     std::size_t num_chunks = (object_size / CHUNK_SIZE) + 1;
     std::size_t rounded_size = num_chunks * CHUNK_SIZE;
 
-    std::size_t remaining_space = rounded_size - sizeof(chunk_header);
+    std::size_t remaining_space = rounded_size - sizeof(chunk);
     if (remaining_space < object_size)
       {
 	rounded_size += CHUNK_SIZE;
@@ -50,13 +50,13 @@ struct chunk_header
 
   static
   void
-  destroy (chunk_header* header)
+  destroy (chunk* chunk)
   {
-    header->~chunk_header();
-    free (header);
+    chunk->~chunk();
+    free (chunk);
   }
 
-  chunk_header (std::size_t object_size, std::size_t num_objects) :
+  chunk (std::size_t object_size, std::size_t num_objects) :
     object_size (object_size),
     mark_bitmap (num_objects)
   {
@@ -97,13 +97,13 @@ struct chunk_header
   valid (void *ptr)
   {
     std::size_t offset = (char*)ptr - (char*)data();
-    bool in_chunk_bounds = offset < CHUNK_SIZE - sizeof(chunk_header);
+    bool in_chunk_bounds = offset < CHUNK_SIZE - sizeof(chunk);
     return in_chunk_bounds && offset % object_size == 0;
   }
 
   std::size_t object_size;
   bitmap mark_bitmap;
-  std::shared_ptr<chunk_header> *back_ptr;
+  std::shared_ptr<chunk> *back_ptr;
 };
 
 #endif

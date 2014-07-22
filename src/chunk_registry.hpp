@@ -4,7 +4,7 @@
 #include <cassert>
 #include <stdlib.h>
 
-#include "chunk_header.hpp"
+#include "chunk.hpp"
 #include "pointer_table.hpp"
 
 struct chunk_registry
@@ -18,18 +18,18 @@ struct chunk_registry
   }
 
   void
-  register_header (chunk_header *header);
+  add (chunk *c);
 
-  chunk_header*
-  new_chunk_header (std::size_t object_size);
+  chunk*
+  new_chunk (std::size_t object_size);
 
   void*
-  new_chunk (std::size_t object_size)
+  new_chunk_data (std::size_t object_size)
   {
-    return new_chunk_header(object_size)->data();
+    return new_chunk(object_size)->data();
   }
 
-  chunk_header*
+  chunk*
   find_chunk (void *ptr);
 
   void

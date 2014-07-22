@@ -10,30 +10,30 @@ chunk_registry::chunk_registry ():
 }
 
 void
-chunk_registry::register_header (chunk_header *header)
+chunk_registry::add (chunk *chnk)
 {
-  auto shared_header =
-    std::shared_ptr<chunk_header> (header, chunk_header::destroy);
-  auto ptr = header->data();
-  auto &header_ref = ptr_table [ptr];
+  auto shared_chunk =
+    std::shared_ptr<chunk> (chnk, chunk::destroy);
+  auto ptr = chnk->data();
+  auto &chunk_ref = ptr_table [ptr];
 
-  header_ref = shared_header;
-  header->back_ptr = &header_ref;
+  chunk_ref = shared_chunk;
+  chnk->back_ptr = &chunk_ref;
 
   m_lower = std::min(m_lower, ptr);
   m_upper = std::max(m_upper, ptr);
 }
 
-chunk_header*
-chunk_registry::new_chunk_header (std::size_t object_size)
+chunk*
+chunk_registry::new_chunk (std::size_t object_size)
 {
-  auto header = chunk_header::create (object_size);
-  register_header (header);
+  auto chnk = chunk::create (object_size);
+  add (chnk);
 
-  return header;
+  return chnk;
 }
 
-chunk_header*
+chunk*
 chunk_registry::find_chunk (void* ptr)
 {
   if (!ptr_table.has (ptr))
