@@ -9,21 +9,28 @@ chunk_registry::chunk_registry ():
 
 }
 
-chunk_header*
-chunk_registry::new_chunk_header (std::size_t object_size)
+void
+chunk_registry::register_header (chunk_header *header)
 {
-  auto header = std::shared_ptr<chunk_header> (chunk_header::create (object_size),
-					       chunk_header::destroy);
+  auto shared_header =
+    std::shared_ptr<chunk_header> (header, chunk_header::destroy);
   auto ptr = header->data();
   auto &header_ref = ptr_table [ptr];
 
-  header_ref = header;
+  header_ref = shared_header;
   header->back_ptr = &header_ref;
 
   m_lower = std::min(m_lower, ptr);
   m_upper = std::max(m_upper, ptr);
+}
 
-  return header.get();
+chunk_header*
+chunk_registry::new_chunk_header (std::size_t object_size)
+{
+  auto header = chunk_header::create (object_size);
+  register_header (header);
+
+  return header;
 }
 
 chunk_header*

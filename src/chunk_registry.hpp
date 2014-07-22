@@ -17,6 +17,9 @@ struct chunk_registry
     return ptr >= m_lower && ptr <= m_upper;
   }
 
+  void
+  register_header (chunk_header *header);
+
   chunk_header*
   new_chunk_header (std::size_t object_size);
 
