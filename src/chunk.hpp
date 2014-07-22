@@ -62,6 +62,41 @@ struct chunk
   {
   }
 
+  bool
+  can_split()
+  {
+    return rounded_size(object_size) > CHUNK_SIZE;
+  }
+
+  chunk*
+  split (std::size_t new_size)
+  {
+    assert (can_split());
+    auto new_other_size = rounded_size(new_size);
+    assert (new_other_size < size());
+
+    auto new_this_size = size() - new_other_size;
+
+    object_size = new_this_size - sizeof(chunk);
+    assert ((char*)this + new_this_size == end());
+
+    return new (end()) chunk (new_size, new_other_size / new_size);
+  }
+
+  void
+  merge (chunk *other)
+  {
+    assert ((void*) other == end());
+
+    object_size = other->size() + size() - sizeof (chunk);
+  }
+
+  std::size_t
+  size()
+  {
+    return rounded_size (object_size);
+  }
+
   void
   mark (void* ptr)
   {
@@ -88,6 +123,12 @@ struct chunk
   data()
   {
     return this + sizeof(*this);
+  }
+
+  void*
+  end()
+  {
+    return ((char*)this) + rounded_size(object_size);
   }
 
   /*
