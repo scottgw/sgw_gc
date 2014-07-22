@@ -32,9 +32,9 @@ struct level1_table : public std::map<std::size_t, std::shared_ptr<level2_table>
 {
 };
 
-struct chunk_allocator
+struct chunk_registry
 {
-  chunk_allocator ();
+  chunk_registry ();
 
   bool
   in_range (void *ptr)

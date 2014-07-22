@@ -1,8 +1,8 @@
 #include <cassert>
 #include <stdlib.h>
-#include "chunk.hpp"
+#include "chunk_registry.hpp"
 
-chunk_allocator::chunk_allocator ():
+chunk_registry::chunk_registry ():
   m_lower ((void*)(1UL << 63UL)),
   m_upper (0)
 {
@@ -10,7 +10,7 @@ chunk_allocator::chunk_allocator ():
 }
 
 chunk_header*
-chunk_allocator::new_chunk_header (std::size_t object_size)
+chunk_registry::new_chunk_header (std::size_t object_size)
 {
   auto header = std::shared_ptr<chunk_header> (chunk_header::create (object_size),
 					       chunk_header::destroy);
@@ -39,7 +39,7 @@ chunk_allocator::new_chunk_header (std::size_t object_size)
 }
 
 chunk_header*
-chunk_allocator::find_chunk (void* ptr)
+chunk_registry::find_chunk (void* ptr)
 {
   auto it = m_table1.find (TOP_BITS(ptr));
 
@@ -60,7 +60,7 @@ chunk_allocator::find_chunk (void* ptr)
 }
 
 void
-chunk_allocator::mark (void* ptr)
+chunk_registry::mark (void* ptr)
 {
   auto header = find_chunk (ptr);
   assert (header && "Must be a valid ptr");
@@ -68,7 +68,7 @@ chunk_allocator::mark (void* ptr)
 }
 
 bool
-chunk_allocator::is_marked (void* ptr)
+chunk_registry::is_marked (void* ptr)
 {
   auto header = find_chunk (ptr);
   assert (header && "Must be a valid ptr");

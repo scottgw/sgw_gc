@@ -1,6 +1,6 @@
 set (test_names
   alloc_test
-  chunk_test
+  chunk_registry_test
   bitmap_test
   CACHE INTERNAL ""
   )
