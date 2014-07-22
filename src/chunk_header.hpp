@@ -1,3 +1,6 @@
+#ifndef _CHUNK_HEADER_HPP
+#define _CHUNK_HEADER_HPP
+
 #include <cassert>
 #include <memory>
 #include <new>
@@ -102,3 +105,5 @@ struct chunk_header
   bitmap mark_bitmap;
   std::shared_ptr<chunk_header> *back_ptr;
 };
+
+#endif

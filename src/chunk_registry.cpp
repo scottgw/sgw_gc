@@ -15,25 +15,13 @@ chunk_registry::new_chunk_header (std::size_t object_size)
   auto header = std::shared_ptr<chunk_header> (chunk_header::create (object_size),
 					       chunk_header::destroy);
   auto ptr = header->data();
+  auto &header_ref = ptr_table [ptr];
+
+  header_ref = header;
+  header->back_ptr = &header_ref;
 
   m_lower = std::min(m_lower, ptr);
   m_upper = std::max(m_upper, ptr);
-
-  std::shared_ptr<level2_table> table2;
-  auto it = m_table1.find (TOP_BITS(ptr));
-  if (it == m_table1.end())
-    {
-      table2 = std::make_shared<level2_table>();
-      m_table1 [TOP_BITS(ptr)] = table2;
-    }
-  else
-    {
-      table2 = it->second;
-    }
-
-  auto &table_header = (*table2) [MID_BITS(ptr)];
-  table_header = header;
-  header->back_ptr = &table_header;
 
   return header.get();
 }
@@ -41,22 +29,12 @@ chunk_registry::new_chunk_header (std::size_t object_size)
 chunk_header*
 chunk_registry::find_chunk (void* ptr)
 {
-  auto it = m_table1.find (TOP_BITS(ptr));
-
-  if (it == m_table1.end())
+  if (!ptr_table.has (ptr))
     {
       return nullptr;
     }
 
-  auto table2 = it->second;
-  auto entry = (*table2)[MID_BITS(ptr)];
-
-  if (!entry)
-    {
-      return nullptr;
-    }
-
-  return entry.get();
+  return ptr_table [ptr].get();
 }
 
 void

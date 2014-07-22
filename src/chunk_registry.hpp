@@ -1,36 +1,11 @@
-#include <new>
-#include <array>
-#include <map>
-#include <vector>
-#include <memory>
-#include <stdlib.h>
+#ifndef _CHUNK_REGISTRY_HPP
+#define _CHUNK_REGISTRY_HPP
+
 #include <cassert>
+#include <stdlib.h>
 
 #include "chunk_header.hpp"
-
-#define PTR_TOP_BITS 40UL
-#define PTR_TOP_SIZE (1UL << PTR_TOP_BITS)
-#define TOP_BIT_MASK (~(PTR_TOP_BITS - 1UL))
-#define TOP_BITS(x) (((std::size_t) x) >> (PTR_MID_BITS + CHUNK_BITS))
-
-#define PTR_MID_BITS (64UL - PTR_TOP_BITS - CHUNK_BITS)
-#define PTR_MID_SIZE (1 << PTR_MID_BITS)
-#define MID_BITS(x)							\
-  ((((std::size_t) x) << PTR_TOP_BITS) >> (PTR_TOP_BITS + CHUNK_BITS))
-
-
-struct level2_table : public std::vector<std::shared_ptr<chunk_header>>
-{
-  level2_table ():
-    std::vector<std::shared_ptr<chunk_header>>(PTR_MID_SIZE,
-					       std::shared_ptr<chunk_header>())
-  {
-  }
-};
-
-struct level1_table : public std::map<std::size_t, std::shared_ptr<level2_table>>
-{
-};
+#include "pointer_table.hpp"
 
 struct chunk_registry
 {
@@ -61,10 +36,12 @@ struct chunk_registry
   is_marked(void *ptr);
 
 private:
-  level1_table m_table1;
+  pointer_table ptr_table;
 
 private:
   void *m_lower;
   void *m_upper;
 
 };
+
+#endif
