@@ -65,22 +65,31 @@ struct chunk
   bool
   can_split()
   {
-    return rounded_size(object_size) > CHUNK_SIZE;
+    return size() > CHUNK_SIZE;
   }
+
+
+  bool
+  can_split_into (std::size_t new_size)
+  {
+    return can_split () && rounded_size (new_size) < size ();
+  }
+
 
   chunk*
   split (std::size_t new_size)
   {
-    assert (can_split());
+    assert (can_split_into (new_size));
+
     auto new_other_size = rounded_size(new_size);
-    assert (new_other_size < size());
+    auto new_this_size  = size() - new_other_size;
+    object_size         = new_this_size - sizeof(chunk);
 
-    auto new_this_size = size() - new_other_size;
-
-    object_size = new_this_size - sizeof(chunk);
     assert ((char*)this + new_this_size == end());
 
-    return new (end()) chunk (new_size, new_other_size / new_size);
+    chunk *c = new (end()) chunk (new_size, new_other_size / new_size);
+
+    return c;
   }
 
   void
