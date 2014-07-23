@@ -15,7 +15,7 @@ alloc::allocate (std::size_t size)
     }
   else
     {
-      return ch_alloc.new_chunk (size);
+      return ch_alloc.allocate (size);
     }
 }
 
@@ -35,11 +35,19 @@ alloc::allocate_from_list (std::size_t size, freelist &list)
 void
 alloc::add_to_freelist (std::size_t size, freelist &list)
 {
-  auto chnk = ch_alloc.new_chunk (size);
+  auto chnk = chunk_allocate (size);
   auto base = (char*) chnk->data();
 
   for (auto p = base; p < base + chunk::rounded_size(size); p += size)
     {
       list.push_front (p);
     }
+}
+
+chunk*
+alloc::chunk_allocate (std::size_t size)
+{
+  auto chnk = ch_alloc.allocate (size);
+  ch_reg.add (chnk);
+  return chnk;
 }

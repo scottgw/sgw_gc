@@ -1,5 +1,6 @@
 set (test_names
   alloc_test
+  chunk_allocator_test
   chunk_registry_test
   chunk_test
   bitmap_test

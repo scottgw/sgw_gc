@@ -4,6 +4,7 @@
 #include <stdlib.h>
 
 #include "chunk_registry.hpp"
+#include "chunk_allocator.hpp"
 
 struct freelist : public std::forward_list<void*>
 {
@@ -29,6 +30,9 @@ private:
   void
   add_to_freelist (std::size_t size, freelist &list);
 
-  chunk_registry ch_alloc;
+  chunk*
+  chunk_allocate (std::size_t size);
 
+  chunk_registry ch_reg;
+  chunk_allocator ch_alloc;
 };

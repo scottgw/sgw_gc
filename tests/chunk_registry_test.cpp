@@ -1,112 +1,93 @@
 #include "../src/chunk_registry.hpp"
 #include <gtest/gtest.h>
 
-TEST(ChunkRegistry, AlignedSmall) {
-  chunk_registry ch_allocator;
-  intptr_t ptr = (intptr_t) ch_allocator.new_chunk (32);
+class ChunkRegistry : public ::testing::Test
+{
+protected:
+  virtual
+  void
+  SetUp()
+  {
+    small_chunk = chunk::create (256);
+    large_chunk = chunk::create (1 << 14);
 
-  ASSERT_EQ (ptr & TOP_BIT_MASK, ptr);
+    small_ptr = small_chunk->data();
+    large_ptr = large_chunk->data();
+
+    ch_reg.add (small_chunk);
+    ch_reg.add (large_chunk);
+  }
+
+  void *small_ptr;
+  void *large_ptr;
+  chunk *small_chunk;
+  chunk *large_chunk;
+  chunk_registry ch_reg;
+};
+
+TEST_F(ChunkRegistry, AllocatedInRange) {
+  ASSERT_TRUE (ch_reg.in_range (small_chunk->data()));
 }
 
-TEST(ChunkRegistry, AlignedLarge) {
-  chunk_registry ch_allocator;
-  intptr_t ptr = (intptr_t) ch_allocator.new_chunk (1 << 13);
-
-  ASSERT_EQ (ptr & TOP_BIT_MASK, ptr);
+TEST_F(ChunkRegistry, AfterMinimumChunkNotInRange) {
+  ASSERT_FALSE (ch_reg.in_range ((void*)((char*)large_chunk->data() + (1 << 13))));
 }
 
-TEST(ChunkRegistry, AllocatedInRange) {
-  chunk_registry ch_allocator;
-  intptr_t ptr = (intptr_t) ch_allocator.new_chunk_data (1 << 13);
-
-  ASSERT_TRUE (ch_allocator.in_range ((void*)ptr));
-}
-
-TEST(ChunkRegistry, AfterMinimumChunkNotInRange) {
-  chunk_registry ch_allocator;
-  intptr_t ptr = (intptr_t) ch_allocator.new_chunk_data (1 << 13);
-
-  ASSERT_FALSE (ch_allocator.in_range ((void*)(ptr + (1 << 13))));
-}
-
-TEST(ChunkRegistry, FetchChunkObjectPtr) {
-  chunk_registry ch_allocator;
-  intptr_t ptr = (intptr_t) ch_allocator.new_chunk_data (1 << 14);
-
-  chunk* chunk = ch_allocator.find_chunk ((void*)ptr);
+TEST_F(ChunkRegistry, FetchChunkObjectPtr) {
+  chunk* chunk = ch_reg.find_chunk (large_ptr);
 
   ASSERT_NE (chunk, nullptr);
-  ASSERT_EQ (chunk->data(), (void*)ptr);
+  ASSERT_EQ (chunk->data(), large_ptr);
 }
 
-TEST(ChunkRegistry, FetchHeaderInteriorPtr) {
-  chunk_registry ch_allocator;
-  intptr_t ptr = (intptr_t) ch_allocator.new_chunk_data (1 << 14);
-
-  chunk* chunk= ch_allocator.find_chunk ((void*)(ptr + (1 << 13)));
+TEST_F(ChunkRegistry, FetchHeaderInteriorPtr) {
+  chunk* chunk= ch_reg.find_chunk ((char*)large_ptr + (1 << 13));
 
   ASSERT_EQ (chunk, nullptr);
 }
 
-TEST(ChunkRegistry, BackPointerIso) {
-  chunk_registry ch_allocator;
-  void *ptr = ch_allocator.new_chunk_data (1 << 14);
-  chunk* chunk = ch_allocator.find_chunk (ptr);
+TEST_F(ChunkRegistry, BackPointerIso) {
+  chunk* chunk = ch_reg.find_chunk (large_ptr);
 
   ASSERT_NE (chunk, nullptr);
   ASSERT_EQ (chunk->back_ptr->get(), chunk);
 }
 
-TEST(ChunkRegistry, MarkTrue) {
-  chunk_registry ch_allocator;
-  void *ptr = ch_allocator.new_chunk_data (1 << 14);
-
-  ch_allocator.mark (ptr);
-  ASSERT_TRUE (ch_allocator.is_marked (ptr));
+TEST_F(ChunkRegistry, MarkTrue) {
+  ch_reg.mark (large_ptr);
+  ASSERT_TRUE (ch_reg.is_marked (large_ptr));
 }
 
-TEST(ChunkRegistry, MarkFalse) {
-  chunk_registry ch_allocator;
-  void *ptr = ch_allocator.new_chunk_data (1 << 14);
-
-  ASSERT_FALSE (ch_allocator.is_marked (ptr));
+TEST_F(ChunkRegistry, MarkFalse) {
+  ASSERT_FALSE (ch_reg.is_marked (large_ptr));
 }
 
-TEST(ChunkRegistry, BasePtrIsValid) {
-  chunk_registry ch_allocator;
-  void *ptr = ch_allocator.new_chunk_data (256);
-  auto header = ch_allocator.find_chunk (ptr);
+TEST_F(ChunkRegistry, BasePtrIsValid) {
+  auto chunk = ch_reg.find_chunk (large_ptr);
 
-  ASSERT_NE (header, nullptr);
-  ASSERT_TRUE (header->valid (ptr));
+  ASSERT_NE (chunk, nullptr);
+  ASSERT_TRUE (chunk->valid (large_ptr));
 }
 
+TEST_F(ChunkRegistry, NextPtrIsValid) {
+  auto chunk = ch_reg.find_chunk (small_ptr);
 
-TEST(ChunkRegistry, NextPtrIsValid) {
-  chunk_registry ch_allocator;
-  void *ptr = ch_allocator.new_chunk_data (256);
-  auto header = ch_allocator.find_chunk (ptr);
-
-  ASSERT_NE (header, nullptr);
-  ASSERT_TRUE (header->valid ((char*)ptr + 256UL));
+  ASSERT_NE (chunk, nullptr);
+  ASSERT_TRUE (chunk->valid ((char*)small_ptr + 256UL));
 }
 
 
-TEST(ChunkRegistry, MidObjectInvalidPtr) {
-  chunk_registry ch_allocator;
-  void *ptr = ch_allocator.new_chunk_data (256);
-  auto header = ch_allocator.find_chunk (ptr);
+TEST_F(ChunkRegistry, MidObjectInvalidPtr) {
+  auto chunk = ch_reg.find_chunk (large_ptr);
 
-  ASSERT_NE (header, nullptr);
-  ASSERT_FALSE (header->valid ((char*)ptr + 240UL));
+  ASSERT_NE (chunk, nullptr);
+  ASSERT_FALSE (chunk->valid ((char*)large_ptr + 240UL));
 }
 
 
-TEST(ChunkRegistry, OutOfChunkInvalidPtr) {
-  chunk_registry ch_allocator;
-  void *ptr = ch_allocator.new_chunk_data (256);
-  auto header = ch_allocator.find_chunk (ptr);
+TEST_F(ChunkRegistry, OutOfChunkInvalidPtr) {
+  auto chunk = ch_reg.find_chunk (large_ptr);
 
-  ASSERT_NE (header, nullptr);
-  ASSERT_FALSE (header->valid ((char*)ptr + 2*4096UL));
+  ASSERT_NE (chunk, nullptr);
+  ASSERT_FALSE (chunk->valid ((char*)large_ptr + 2*4096UL));
 }

@@ -6,16 +6,6 @@
 
 #include "chunk.hpp"
 
-#define PTR_TOP_BITS 40UL
-#define PTR_TOP_SIZE (1UL << PTR_TOP_BITS)
-#define TOP_BIT_MASK (~(PTR_TOP_BITS - 1UL))
-#define TOP_BITS(x) (((std::size_t) x) >> (PTR_MID_BITS + CHUNK_BITS))
-
-#define PTR_MID_BITS (64UL - PTR_TOP_BITS - CHUNK_BITS)
-#define PTR_MID_SIZE (1 << PTR_MID_BITS)
-#define MID_BITS(x)							\
-  ((((std::size_t) x) << PTR_TOP_BITS) >> (PTR_TOP_BITS + CHUNK_BITS))
-
 struct pointer_table
 {
   std::shared_ptr<chunk>&

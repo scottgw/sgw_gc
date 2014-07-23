@@ -21,15 +21,6 @@ struct chunk_registry
   add (chunk *c);
 
   chunk*
-  new_chunk (std::size_t object_size);
-
-  void*
-  new_chunk_data (std::size_t object_size)
-  {
-    return new_chunk(object_size)->data();
-  }
-
-  chunk*
   find_chunk (void *ptr);
 
   void

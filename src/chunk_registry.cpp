@@ -25,15 +25,6 @@ chunk_registry::add (chunk *chnk)
 }
 
 chunk*
-chunk_registry::new_chunk (std::size_t object_size)
-{
-  auto chnk = chunk::create (object_size);
-  add (chnk);
-
-  return chnk;
-}
-
-chunk*
 chunk_registry::find_chunk (void* ptr)
 {
   if (!ptr_table.has (ptr))
