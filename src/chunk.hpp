@@ -31,19 +31,17 @@ struct chunk
   {
   }
 
-  bool
-  can_split()
-  {
-    return size() > CHUNK_SIZE;
-  }
-
-
+  /*
+    A chunk can be split if after the split both the new chunk
+    and the old chunk are non-empty.
+   */
   bool
   can_split_into (std::size_t new_size)
   {
-    return can_split () && rounded_size (new_size) < size ();
+    return
+      size() > CHUNK_SIZE &&
+      rounded_size (new_size) < size () - CHUNK_SIZE;
   }
-
 
   chunk*
   split (std::size_t new_size);
