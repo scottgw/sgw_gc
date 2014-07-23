@@ -68,6 +68,7 @@ struct chunk
     assert (can_merge (other));
 
     object_size = other->size() + effective_size();
+    other->~chunk();
   }
 
   /*

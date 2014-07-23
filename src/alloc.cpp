@@ -6,6 +6,14 @@ alloc::alloc () :
 {
 }
 
+alloc::~alloc ()
+{
+  for (auto chnk : small_chunks)
+    {
+      ch_alloc.free (chnk);
+    }
+}
+
 void*
 alloc::allocate (std::size_t size)
 {
@@ -15,7 +23,23 @@ alloc::allocate (std::size_t size)
     }
   else
     {
-      return ch_alloc.allocate (size);
+      return chunk_allocate (size)->data();
+    }
+}
+
+void
+alloc::free (void* ptr)
+{
+  chunk *chnk = ch_reg.find_chunk (ptr);
+  assert (chnk);
+  auto size = chnk->object_size;
+  if (size <= list_objects_max_size)
+    {
+      freelists[size].push_front (ptr);
+    }
+  else
+    {
+      ch_alloc.free (chnk);
     }
 }
 
@@ -38,10 +62,12 @@ alloc::add_to_freelist (std::size_t size, freelist &list)
   auto chnk = chunk_allocate (size);
   auto base = (char*) chnk->data();
 
-  for (auto p = base; p < base + chunk::rounded_size(size); p += size)
+  for (auto p = base; p < chnk->end(); p += size)
     {
       list.push_front (p);
     }
+
+  small_chunks.push_back (chnk);
 }
 
 chunk*

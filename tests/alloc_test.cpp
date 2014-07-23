@@ -12,12 +12,14 @@ TEST(Alloc, SmallAllocation)
 
   void *ptr = allocator.allocate (32);
   ASSERT_NE (ptr, nullptr);
+  allocator.free (ptr);
 }
 
 TEST(Alloc, BigAllocation)
 {
   alloc allocator;
 
-  void *ptr = allocator.allocate (1 << 14);
+  void *ptr = allocator.allocate (1 << 13);
   ASSERT_NE (ptr, nullptr);
+  allocator.free (ptr);
 }

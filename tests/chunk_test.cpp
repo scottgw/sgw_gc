@@ -60,6 +60,8 @@ TEST_F (Chunk, Split)
   ASSERT_EQ (split_chnk->end(), old_end);
   ASSERT_EQ ((std::size_t)split_chnk->end() % CHUNK_SIZE, 0);
   ASSERT_EQ ((std::size_t)large_chunk->end() % CHUNK_SIZE, 0);
+
+  split_chnk->~chunk();
 }
 
 TEST_F (Chunk, SplitMerge)

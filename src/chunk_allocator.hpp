@@ -16,6 +16,14 @@ struct chunk_allocator
     freeset.insert (chnk);
   }
 
+  ~chunk_allocator()
+  {
+    for (auto chnk : freeset)
+      {
+	chunk::destroy (chnk);
+      }
+  }
+
   chunk*
   allocate (std::size_t size)
   {
@@ -41,6 +49,7 @@ struct chunk_allocator
   void
   free(chunk *chnk)
   {
+    assert (chnk);
     auto it = freeset.upper_bound (chnk);
     auto greater_it = it;
     auto merged_chunk = false;

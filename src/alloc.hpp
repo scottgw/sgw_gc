@@ -14,13 +14,18 @@ class alloc {
 public:
   alloc ();
 
+  ~alloc ();
+
   void*
   allocate (std::size_t size);
 
+  void
+  free (void* ptr);
+
+private:
   void*
   allocate_from_list (std::size_t size, freelist &list);
 
-private:
   std::map<std::size_t, freelist> freelists;
 
 private:
@@ -35,4 +40,6 @@ private:
 
   chunk_registry ch_reg;
   chunk_allocator ch_alloc;
+
+  std::vector <chunk*> small_chunks;
 };
