@@ -22,6 +22,12 @@ chunk_registry::add (chunk *chnk)
   m_upper = std::max(m_upper, ptr);
 }
 
+void
+chunk_registry::remove (chunk *chnk)
+{
+  ptr_table [chnk->data()] = nullptr;
+}
+
 chunk*
 chunk_registry::find_chunk (void* ptr)
 {

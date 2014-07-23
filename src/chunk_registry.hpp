@@ -20,6 +20,9 @@ struct chunk_registry
   void
   add (chunk *c);
 
+  void
+  remove (chunk *c);
+
   chunk*
   find_chunk (void *ptr);
 

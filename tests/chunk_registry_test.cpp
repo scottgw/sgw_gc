@@ -91,3 +91,9 @@ TEST_F(ChunkRegistry, OutOfChunkInvalidPtr) {
   ASSERT_NE (chunk, nullptr);
   ASSERT_FALSE (chunk->valid ((char*)large_ptr + 2*4096UL));
 }
+
+TEST_F(ChunkRegistry, Remove) {
+  ch_reg.remove (large_chunk);
+  auto chunk = ch_reg.find_chunk (large_ptr);
+  ASSERT_EQ (chunk, nullptr);
+}
