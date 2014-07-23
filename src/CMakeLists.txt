@@ -3,6 +3,6 @@ add_library (sgw_gc
   alloc.cpp alloc.hpp
   pointer_table.hpp
   chunk_registry.cpp chunk_registry.hpp
-  chunk.hpp
+  chunk.cpp chunk.hpp
   bitmap.hpp
   )
