@@ -62,12 +62,18 @@ struct chunk
     object_size = other->size() + effective_size();
   }
 
+  /*
+    Total size of the chunk (including header)
+   */
   std::size_t
   size()
   {
     return rounded_size (object_size);
   }
 
+  /*
+    Size of the chunk available for program allocation.
+   */
   std::size_t
   effective_size()
   {
