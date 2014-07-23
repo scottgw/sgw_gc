@@ -18,6 +18,14 @@ protected:
     ch_reg.add (large_chunk);
   }
 
+  virtual
+  void
+  TearDown()
+  {
+    chunk::destroy (small_chunk);
+    chunk::destroy (large_chunk);
+  }
+
   void *small_ptr;
   void *large_ptr;
   chunk *small_chunk;
