@@ -12,12 +12,10 @@ chunk_registry::chunk_registry ():
 void
 chunk_registry::add (chunk *chnk)
 {
-  auto shared_chunk =
-    std::shared_ptr<chunk> (chnk, chunk::destroy);
   auto ptr = chnk->data();
   auto &chunk_ref = ptr_table [ptr];
 
-  chunk_ref = shared_chunk;
+  chunk_ref = chnk;
   chnk->back_ptr = &chunk_ref;
 
   m_lower = std::min(m_lower, ptr);
@@ -32,7 +30,7 @@ chunk_registry::find_chunk (void* ptr)
       return nullptr;
     }
 
-  return ptr_table [ptr].get();
+  return ptr_table [ptr];
 }
 
 void

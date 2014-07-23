@@ -50,7 +50,7 @@ TEST_F(ChunkRegistry, BackPointerIso) {
   chunk* chunk = ch_reg.find_chunk (large_ptr);
 
   ASSERT_NE (chunk, nullptr);
-  ASSERT_EQ (chunk->back_ptr->get(), chunk);
+  ASSERT_EQ (*chunk->back_ptr, chunk);
 }
 
 TEST_F(ChunkRegistry, MarkTrue) {

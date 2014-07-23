@@ -121,7 +121,7 @@ struct chunk
 
   std::size_t object_size;
   bitmap mark_bitmap;
-  std::shared_ptr<chunk> *back_ptr;
+  chunk **back_ptr;
 };
 
 #endif

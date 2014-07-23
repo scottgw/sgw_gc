@@ -8,7 +8,7 @@
 
 struct pointer_table
 {
-  std::shared_ptr<chunk>&
+  chunk* &
   operator [] (void *ptr)
   {
     std::shared_ptr<inner_map> inner;
@@ -36,18 +36,16 @@ struct pointer_table
       }
     else
       {
-	shared_chunk chk = (*it->second) [MID_BITS(ptr)];
-	return !!chk;
+	auto chk = (*it->second) [MID_BITS(ptr)];
+	return chk != nullptr;
       }
   }
   
 private:
-  typedef std::shared_ptr<chunk> shared_chunk;
-  
-  struct inner_map : public std::vector<shared_chunk>
+  struct inner_map : public std::vector<chunk*>
   {
     inner_map ():
-      std::vector<shared_chunk>(PTR_MID_SIZE, shared_chunk())
+      std::vector<chunk*>(PTR_MID_SIZE, nullptr)
       {
       }
   };
