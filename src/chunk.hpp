@@ -103,7 +103,7 @@ struct chunk
   {
     assert (can_merge (other));
 
-    object_size = other->size() + size() - sizeof (chunk);
+    object_size = other->size() + effective_size();
   }
 
   std::size_t
@@ -111,6 +111,13 @@ struct chunk
   {
     return rounded_size (object_size);
   }
+
+  std::size_t
+  effective_size()
+  {
+    return size () - sizeof(chunk);
+  }
+
 
   void
   mark (void* ptr)
