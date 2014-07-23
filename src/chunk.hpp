@@ -92,10 +92,16 @@ struct chunk
     return c;
   }
 
+  bool
+  can_merge (chunk *other)
+  {
+    return (void*) other == end();
+  }
+
   void
   merge (chunk *other)
   {
-    assert ((void*) other == end());
+    assert (can_merge (other));
 
     object_size = other->size() + size() - sizeof (chunk);
   }
