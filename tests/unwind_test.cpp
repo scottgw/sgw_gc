@@ -22,18 +22,18 @@ TEST(Unwind, FindSignal)
   unw.start();
 
   auto curr_stack_ptr = (void**)unw.stack_ptr();
-  auto res = unw.step();
-  auto next_stack_ptr = (void**)unw.stack_ptr();
 
-  printf("res: %d, curr: %p next: %p\n", res, curr_stack_ptr, next_stack_ptr);
-
+  // Walk up stack looking for our signal
   auto found_signal = false;
-  for (auto ptr = curr_stack_ptr; ptr <= next_stack_ptr; ptr++)
+  while (unw.step())
     {
-      std::size_t val = *((std::size_t*)ptr);
-      printf("%p, %p\n", ptr, (void*)val);
-      found_signal |= val == signal;
+      auto next_stack_ptr = (void**)unw.stack_ptr();
+      for (auto ptr = curr_stack_ptr; ptr <= next_stack_ptr; ptr++)
+	{
+	  std::size_t val = *((std::size_t*)ptr);
+	  found_signal |= val == signal;
+	}
+      curr_stack_ptr = next_stack_ptr;
     }
-
   ASSERT_TRUE (found_signal);
 };
