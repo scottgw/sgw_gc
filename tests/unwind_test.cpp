@@ -2,11 +2,6 @@
 #include <gtest/gtest.h>
 #include <stdio.h>
 
-TEST(Unwind, Create)
-{
-  unwind unw;
-};
-
 TEST(Unwind, Start)
 {
   unwind unw;
@@ -34,6 +29,54 @@ TEST(Unwind, FindSignal)
 	  found_signal |= val == signal;
 	}
       curr_stack_ptr = next_stack_ptr;
+    }
+  ASSERT_TRUE (found_signal);
+};
+
+
+TEST(Unwind, IteratorEndIsDone)
+{
+  unwind_stack stack;
+  ASSERT_TRUE (stack.end().is_done());
+}
+
+
+TEST(Unwind, IteratorBeginNotDone)
+{
+  unwind_stack stack;
+  ASSERT_FALSE (stack.begin().is_done());
+}
+
+
+TEST(Unwind, IteratorBeginEndNE)
+{
+  unwind_stack stack;
+  ASSERT_NE (stack.begin(), stack.end());
+}
+
+TEST(Unwind, FindSignalIterator)
+{
+  unwind_stack stack;
+  std::size_t signal = 0xDEADBEEF;
+  auto found_signal = false;
+  for (auto it = stack.begin(); it != stack.end(); ++it)
+    {
+      std::size_t val = (std::size_t)(*it);
+      found_signal |= val == signal;
+    }
+  ASSERT_TRUE (found_signal);
+};
+
+
+TEST(Unwind, FindSignalForSyntax)
+{
+  unwind_stack stack;
+  std::size_t signal = 0xDEADBEEF;
+  auto found_signal = false;
+  for (auto ptr : stack)
+    {
+      std::size_t val = (std::size_t)ptr;
+      found_signal |= val == signal;
     }
   ASSERT_TRUE (found_signal);
 };
