@@ -57,13 +57,14 @@ TEST(Unwind, IteratorBeginEndNE)
 TEST(Unwind, FindSignalIterator)
 {
   unwind_stack stack;
-  std::size_t signal = 0xDEADBEEF;
   auto found_signal = false;
+
+  std::size_t signal = 0xDEADBEEF;
   for (auto it = stack.begin(); it != stack.end(); ++it)
     {
-      std::size_t val = (std::size_t)(*it);
-      found_signal |= val == signal;
+      found_signal |= (std::size_t)(*it) == signal;
     }
+
   ASSERT_TRUE (found_signal);
 };
 
@@ -71,12 +72,13 @@ TEST(Unwind, FindSignalIterator)
 TEST(Unwind, FindSignalForSyntax)
 {
   unwind_stack stack;
-  std::size_t signal = 0xDEADBEEF;
   auto found_signal = false;
+
+  std::size_t signal = 0xDEADBEEF;
   for (auto ptr : stack)
     {
-      std::size_t val = (std::size_t)ptr;
-      found_signal |= val == signal;
+      found_signal |= (std::size_t)ptr == signal;
     }
+
   ASSERT_TRUE (found_signal);
 };
