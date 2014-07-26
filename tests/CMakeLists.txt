@@ -4,6 +4,7 @@ set (test_names
   chunk_registry_test
   chunk_test
   bitmap_test
+  unwind_test
   CACHE INTERNAL ""
   )
 # The `CACHE INTERNAL' line  makes this variable available in the parent,

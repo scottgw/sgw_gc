@@ -6,4 +6,9 @@ add_library (sgw_gc
   chunk_registry.cpp chunk_registry.hpp
   chunk.cpp chunk.hpp
   bitmap.hpp
+  unwind.hpp
+  )
+
+target_link_libraries (sgw_gc
+  unwind
   )
