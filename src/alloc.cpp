@@ -74,6 +74,11 @@ chunk*
 alloc::chunk_allocate (std::size_t size)
 {
   auto chnk = ch_alloc.allocate (size);
-  ch_reg.add (chnk);
+
+  if (chnk)
+    {
+      ch_reg.add (chnk);
+    }
+
   return chnk;
 }
