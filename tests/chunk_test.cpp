@@ -56,6 +56,7 @@ TEST_F (Chunk, Split)
   auto old_end = large_chunk->end();
   chunk *split_chnk = large_chunk->split(256);
 
+  ASSERT_EQ (split_chnk->object_size, 256);
   ASSERT_LT (large_chunk, split_chnk);
   ASSERT_EQ (split_chnk->end(), old_end);
   ASSERT_EQ ((std::size_t)split_chnk->end() % CHUNK_SIZE, 0);

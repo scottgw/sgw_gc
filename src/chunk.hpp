@@ -89,9 +89,11 @@ struct chunk
     return size () - sizeof(chunk);
   }
 
+  void
+  set_mark (void* ptr);
 
   void
-  mark (void* ptr);
+  clear_mark (void* ptr);
 
   bool
   is_marked (void* ptr);

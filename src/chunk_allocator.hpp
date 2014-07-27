@@ -85,7 +85,6 @@ struct chunk_allocator
       }
   }
 
-private:
   std::size_t total_allocation;
   std::set <chunk*> freeset;
 };

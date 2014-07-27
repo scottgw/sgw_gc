@@ -1,4 +1,4 @@
-#include <forward_list>
+#include <deque>
 #include <map>
 #include <vector>
 #include <stdlib.h>
@@ -6,7 +6,7 @@
 #include "chunk_registry.hpp"
 #include "chunk_allocator.hpp"
 
-struct freelist : public std::forward_list<void*>
+struct freelist : public std::deque<void*>
 {
 };
 
@@ -21,6 +21,19 @@ public:
 
   void
   free (void* ptr);
+
+private:
+  void
+  mark(void *ptr);
+
+  void
+  mark_stack();
+
+  void
+  sweep();
+
+  void
+  collect();
 
 private:
   void*
@@ -41,5 +54,5 @@ private:
   chunk_registry ch_reg;
   chunk_allocator ch_alloc;
 
-  std::vector <chunk*> small_chunks;
+  std::vector <chunk*> allocated_chunks;
 };

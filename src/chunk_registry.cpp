@@ -44,7 +44,7 @@ chunk_registry::mark (void* ptr)
 {
   auto header = find_chunk (ptr);
   assert (header && "Must be a valid ptr");
-  header->mark (ptr);
+  header->set_mark (ptr);
 }
 
 bool

@@ -54,10 +54,18 @@ chunk::split (std::size_t new_size)
 }
 
 void
-chunk::mark (void* ptr)
+chunk::set_mark (void* ptr)
 {
   int i = ((char*) ptr - (char*) data()) / object_size;
   mark_bitmap.set (i, true);
+}
+
+
+void
+chunk::clear_mark (void* ptr)
+{
+  int i = ((char*) ptr - (char*) data()) / object_size;
+  mark_bitmap.set (i, false);
 }
 
 
@@ -68,11 +76,13 @@ chunk::is_marked (void* ptr)
   return mark_bitmap [i];
 }
 
-
 bool
 chunk::valid (void *ptr)
 {
   std::size_t offset = (char*)ptr - (char*)data();
-  bool in_chunk_bounds = offset < CHUNK_SIZE - sizeof(chunk);
-  return in_chunk_bounds && offset % object_size == 0;
+  bool in_chunk_bounds =
+    (char*) ptr >= (char*) data() &&
+    offset < effective_size();
+  bool valid_offset = offset % object_size == 0;
+  return in_chunk_bounds && valid_offset;
 }
