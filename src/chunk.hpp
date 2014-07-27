@@ -50,7 +50,7 @@ struct chunk
   {
     return
       size() > CHUNK_SIZE &&
-      rounded_size (new_size) < size () - CHUNK_SIZE;
+      rounded_size (new_size) <= size () - CHUNK_SIZE;
   }
 
   chunk*
