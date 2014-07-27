@@ -31,19 +31,20 @@ struct chunk_allocator
 
     for (auto it = freeset.begin(); it != end; ++it)
       {
-	auto chunk = *it;
-	if (chunk->can_split_into (size))
+	auto chnk = *it;
+	if (chnk->can_split_into (size))
 	  {
-	    return chunk->split (size);
+	    return chnk->split (size);
 	  }
-	else if (size < chunk->effective_size())
+	else if (size < chnk->effective_size())
 	  {
+	    chnk = new (chnk) chunk (size);
 	    freeset.erase (it);
-	    return chunk;
+	    return chnk;
 	  }
       }
 
-    return 0;
+    return nullptr;
   }
 
   void

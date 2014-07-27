@@ -35,9 +35,9 @@ struct chunk
   void
   destroy (chunk* chunk);
 
-  chunk (std::size_t object_size, std::size_t num_objects) :
+  chunk (std::size_t object_size) :
     object_size (object_size),
-    mark_bitmap (num_objects)
+    mark_bitmap (chunk::rounded_size (object_size) / object_size)
   {
   }
 

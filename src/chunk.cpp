@@ -8,12 +8,7 @@ chunk::create (std::size_t object_size)
   void *ptr;
   posix_memalign (&ptr, CHUNK_SIZE, rounded_size);
 
-  std::size_t num_objects = rounded_size / object_size;
-  assert (object_size >= CHUNK_SIZE/2
-	  ? num_objects == 1 
-	  : num_objects > 1);
-
-  chunk *c = new (ptr) chunk (object_size, num_objects);
+  chunk *c = new (ptr) chunk (object_size);
 
   return c;
 }    
@@ -53,7 +48,7 @@ chunk::split (std::size_t new_size)
 
   assert ((char*)this + new_this_size == end());
 
-  chunk *c = new (end()) chunk (new_size, new_other_size / new_size);
+  chunk *c = new (end()) chunk (new_size);
 
   return c;
 }
