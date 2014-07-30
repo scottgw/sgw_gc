@@ -3,6 +3,7 @@
 struct bitmap
 {
   bitmap (std::size_t size) :
+    size (size),
     impl ((size / sizeof(char)) + 1, (char)0)
   {
   }
@@ -39,6 +40,8 @@ struct bitmap
 	byte = 0;
       }
   }
+
+  std::size_t size;
 
 private:
   std::vector<char> impl;

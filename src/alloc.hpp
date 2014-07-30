@@ -12,7 +12,7 @@ struct freelist : public std::deque<void*>
 
 class alloc {
 public:
-  alloc ();
+  alloc (bool free_memory = true);
 
   ~alloc ();
 
@@ -55,4 +55,7 @@ private:
   chunk_allocator ch_alloc;
 
   std::set <chunk*> allocated_chunks;
+
+private:
+  bool free_memory;
 };

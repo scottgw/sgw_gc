@@ -25,34 +25,34 @@ TEST(Alloc, BigAllocation)
 
 TEST(Alloc, TriggerCollect)
 {
-  auto allocator = new alloc();
+  alloc allocator (false);
 
-  void *ptr1 = allocator->allocate (1 << 11);
-  ptr1 = allocator->allocate (1 << 11);
-  ptr1 = allocator->allocate (1 << 11);
-  ptr1 = allocator->allocate (1 << 11);
-  void *ptr2 = allocator->allocate (128);
-  void *ptr3 = allocator->allocate (1 << 12);
+  void *ptr1 = allocator.allocate (1 << 11);
+  ptr1 = allocator.allocate (1 << 11);
+  ptr1 = allocator.allocate (1 << 11);
+  ptr1 = allocator.allocate (1 << 11);
+  void *ptr2 = allocator.allocate (128);
+  void *ptr3 = allocator.allocate (1 << 12);
 
   ASSERT_NE (ptr1, nullptr);
   ASSERT_NE (ptr2, nullptr);
   ASSERT_NE (ptr3, nullptr);
 
-  allocator->free (ptr1);
-  allocator->free (ptr2);
-  allocator->free (ptr3);
+  allocator.free (ptr1);
+  allocator.free (ptr2);
+  allocator.free (ptr3);
 }
 
 
 
 TEST(Alloc, ManyAllocations)
 {
-  auto allocator = new alloc();
+  alloc allocator;
   auto n = 50;
 
   for (int i = 0; i < n; i++)
     {
-      int *arr = (int*)allocator->allocate (256);
+      int *arr = (int*)allocator.allocate (256);
       arr[0] = 42;
     }
 }

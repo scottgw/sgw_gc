@@ -3,7 +3,7 @@
 #include "chunk_registry.hpp"
 
 chunk_registry::chunk_registry ():
-  m_lower ((void*)(1UL << 63UL)),
+  m_lower ((void*)(-1)),
   m_upper (0)
 {
 
@@ -19,7 +19,7 @@ chunk_registry::add (chunk *chnk)
   chnk->back_ptr = &chunk_ref;
 
   m_lower = std::min(m_lower, ptr);
-  m_upper = std::max(m_upper, ptr);
+  m_upper = std::max(m_upper, (void*)((char*)chnk + chnk->size()));
 }
 
 void

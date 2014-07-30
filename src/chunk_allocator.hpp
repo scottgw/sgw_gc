@@ -11,6 +11,7 @@ struct chunk_allocator
 {
   chunk_allocator()
   {
+    number_of_allocations = 1;
     total_allocation = FIRST_CHUNK_SIZE;
     chunk *chnk = chunk::create (total_allocation);
     freeset.insert (chnk);
@@ -18,6 +19,8 @@ struct chunk_allocator
 
   ~chunk_allocator()
   {
+    assert (freeset.size() == number_of_allocations &&
+	    "All allocations should be returned before desctruction");
     for (auto chnk : freeset)
       {
 	chunk::destroy (chnk);
@@ -92,6 +95,7 @@ struct chunk_allocator
       }
   }
 
+  std::size_t number_of_allocations;
   std::size_t total_allocation;
   std::set <chunk*> freeset;
 };

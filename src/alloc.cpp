@@ -2,16 +2,20 @@
 #include "alloc.hpp"
 #include "unwind.hpp"
 
-alloc::alloc () :
-  list_objects_max_size (128)
+alloc::alloc (bool free_memory) :
+  list_objects_max_size (128),
+  free_memory (free_memory)
 {
 }
 
 alloc::~alloc ()
 {
-  for (auto chnk : allocated_chunks)
+  if (free_memory)
     {
-      ch_alloc.free (chnk);
+      for (auto chnk : allocated_chunks)
+	{
+	  ch_alloc.free (chnk);
+	}
     }
 }
 
@@ -124,7 +128,7 @@ alloc::mark (void *ptr)
 	{
 	  chnk->set_mark (ptr);
 	  auto size = chnk->object_size;
-	  for (auto it = (void**) ptr; it < (void**)ptr + size ; ++it)
+	  for (auto it = (void**) ptr; it < (void*)((char*)ptr + size) ; ++it)
 	    {
 	      auto slot = *it;
 	      mark (slot);

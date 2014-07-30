@@ -45,6 +45,9 @@ chunk::split (std::size_t new_size)
   auto new_other_size = rounded_size(new_size);
   auto new_this_size  = size() - new_other_size;
   object_size         = new_this_size - sizeof(chunk);
+  // If this is splittable then it should already have a bitmap size of 1  
+  // mark_bitmap         = bitmap (1);
+  assert (mark_bitmap.size == 1);
 
   assert ((char*)this + new_this_size == end());
 
