@@ -4,6 +4,7 @@
 
 alloc::alloc (bool free_memory) :
   list_objects_max_size (128),
+  ch_alloc (free_memory),
   free_memory (free_memory)
 {
 }
