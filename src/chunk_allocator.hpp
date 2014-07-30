@@ -54,6 +54,7 @@ struct chunk_allocator
     auto it = freeset.upper_bound (chnk);
     auto greater_it = it;
     auto merged_chunk = false;
+    auto merged_greater = false;
 
     if (greater_it != freeset.end())
       {
@@ -63,7 +64,7 @@ struct chunk_allocator
 	if (chnk->can_merge (greater))
 	  {
 	    chnk->merge (greater);
-	    freeset.erase (greater_it);
+	    merged_greater = true;
 	  }
       }
 
@@ -71,12 +72,18 @@ struct chunk_allocator
       {
 	// Check the element less than one greater to see if
 	// we can merge into it.
-	auto lesser = *--it;
+	--it;
+	auto lesser = *it;
 	if (lesser->can_merge (chnk))
 	  {
 	    merged_chunk = true;
 	    lesser->merge (chnk);
 	  }
+      }
+
+    if (merged_greater)
+      {
+	freeset.erase (greater_it);
       }
 
     if (!merged_chunk)
