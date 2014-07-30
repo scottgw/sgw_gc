@@ -108,7 +108,7 @@ alloc::chunk_allocate (std::size_t size)
   if (chnk)
     {
       ch_reg.add (chnk);
-      allocated_chunks.push_back (chnk);
+      allocated_chunks.insert (chnk);
     }
 
   return chnk;
@@ -147,6 +147,7 @@ alloc::mark_stack()
 void
 alloc::sweep()
 {
+  std::vector<chunk*> to_erase;
   for (auto chnk : allocated_chunks)
     {
       auto base = chnk->data();
@@ -162,6 +163,7 @@ alloc::sweep()
 	    {
 	      if (size > list_objects_max_size)
 		{
+		  to_erase.push_back (chnk);
 		  ch_reg.remove (chnk);
 		  ch_alloc.free (chnk);
 		}
@@ -171,6 +173,11 @@ alloc::sweep()
 		}
 	    }
 	}      
+    }
+
+  for (auto chnk : to_erase)
+    {
+      allocated_chunks.erase (chnk);
     }
 }
 

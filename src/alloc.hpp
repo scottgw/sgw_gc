@@ -1,6 +1,6 @@
 #include <deque>
 #include <map>
-#include <vector>
+#include <set>
 #include <stdlib.h>
 
 #include "chunk_registry.hpp"
@@ -54,5 +54,5 @@ private:
   chunk_registry ch_reg;
   chunk_allocator ch_alloc;
 
-  std::vector <chunk*> allocated_chunks;
+  std::set <chunk*> allocated_chunks;
 };
