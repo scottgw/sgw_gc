@@ -162,6 +162,7 @@ alloc::sweep()
 	    {
 	      if (size > list_objects_max_size)
 		{
+		  ch_reg.remove (chnk);
 		  ch_alloc.free (chnk);
 		}
 	      else
