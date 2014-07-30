@@ -74,6 +74,7 @@ struct chunk
     assert (can_merge (other));
 
     object_size = other->size() + effective_size();
+    mark_bitmap = bitmap (1);
     other->~chunk();
   }
 
