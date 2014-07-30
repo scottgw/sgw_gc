@@ -41,6 +41,12 @@ struct chunk
   {
   }
 
+  std::size_t
+  number_objects()
+  {
+    return effective_size() / object_size;
+  }
+
   /*
     A chunk can be split if after the split both the new chunk
     and the old chunk are non-empty.
