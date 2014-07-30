@@ -37,9 +37,14 @@ TEST_F(ChunkRegistry, AllocatedInRange) {
   ASSERT_TRUE (ch_reg.in_range (small_chunk->data()));
 }
 
-TEST_F(ChunkRegistry, AfterMinimumChunkNotInRange) {
-  ASSERT_FALSE (ch_reg.in_range ((void*)((char*)large_chunk->data() + (1 << 13))));
+TEST_F(ChunkRegistry, MidChunkInRange) {
+  ASSERT_TRUE (ch_reg.in_range ((void*)((char*)large_chunk->data() + (1 << 13))));
 }
+
+TEST_F(ChunkRegistry, AfterChunkNotInRange) {
+  ASSERT_FALSE (ch_reg.in_range ((void*)((char*)large_chunk->data() + (1 << 16))));
+}
+
 
 TEST_F(ChunkRegistry, FetchChunkObjectPtr) {
   chunk* chunk = ch_reg.find_chunk (large_ptr);
