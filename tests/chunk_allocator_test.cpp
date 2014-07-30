@@ -26,10 +26,12 @@ public:
 };
 
 TEST_F(ChunkAllocator, AlignedSmall) {
+  ASSERT_NE (small_chunk, nullptr);
   ASSERT_EQ ((intptr_t)small_chunk & TOP_BIT_MASK, (intptr_t)small_chunk);
 }
 
 TEST_F(ChunkAllocator, AlignedLarge) {
+  ASSERT_NE (large_chunk, nullptr);
   ASSERT_EQ ((intptr_t)large_chunk & TOP_BIT_MASK, (intptr_t)large_chunk);
 }
 
@@ -63,4 +65,13 @@ TEST_F(ChunkAllocator, SmallAfterLarge2) {
   ASSERT_NE (med, nullptr);
 
   ASSERT_EQ (med->object_size, 256);
+}
+
+TEST_F(ChunkAllocator, AllocateAndFree)
+{
+  chunk *c;
+  c = ch_alloc.allocate (1 << 11);
+  ch_alloc.free (c);
+  c = ch_alloc.allocate (1 << 11);
+  ch_alloc.free (c);
 }
