@@ -42,3 +42,17 @@ TEST(Alloc, TriggerCollect)
   allocator->free (ptr2);
   allocator->free (ptr3);
 }
+
+
+
+TEST(Alloc, ManyAllocations)
+{
+  auto allocator = new alloc();
+  auto n = 50;
+
+  for (int i = 0; i < n; i++)
+    {
+      int *arr = (int*)allocator->allocate (256);
+      arr[0] = 42;
+    }
+}
