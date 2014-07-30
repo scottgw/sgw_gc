@@ -65,6 +65,12 @@ TEST_F(ChunkAllocator, SmallAfterLarge2) {
   ASSERT_NE (med, nullptr);
 
   ASSERT_EQ (med->object_size, 256);
+
+  ch_alloc.free (med);
+  ch_alloc.free (large1);
+  ch_alloc.free (large2);
+  ch_alloc.free (large3);
+  ch_alloc.free (large4);
 }
 
 TEST_F(ChunkAllocator, AllocateAndFree)
