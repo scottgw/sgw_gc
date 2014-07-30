@@ -36,7 +36,16 @@ chunk_registry::find_chunk (void* ptr)
       return nullptr;
     }
 
-  return ptr_table [ptr];
+  auto &candidate = ptr_table[ptr];
+
+  if (candidate && &candidate == candidate->back_ptr)
+    {
+      return candidate;
+    }
+  else
+    {
+      return nullptr;
+    }
 }
 
 void
