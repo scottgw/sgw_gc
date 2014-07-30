@@ -37,7 +37,7 @@ struct chunk
 
   chunk (std::size_t object_size) :
     object_size (object_size),
-    mark_bitmap (chunk::rounded_size (object_size) / object_size)
+    mark_bitmap (effective_size () / object_size)
   {
   }
 
@@ -119,7 +119,7 @@ struct chunk
   void*
   end()
   {
-    return ((char*)this) + rounded_size(object_size);
+    return ((char*)this) + size();
   }
 
   /*
