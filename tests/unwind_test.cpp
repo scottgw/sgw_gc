@@ -1,6 +1,8 @@
+#include <fstream>
 #include "../src/unwind.hpp"
 #include <gtest/gtest.h>
 #include <stdio.h>
+
 
 TEST(Unwind, Start)
 {
@@ -12,8 +14,10 @@ TEST(Unwind, Start)
 
 TEST(Unwind, FindSignal)
 {
+  std::ofstream null ("/dev/null");
   unwind unw;
   std::size_t signal = 0xDEADBEEF;
+  null << &signal;
   unw.start();
 
   auto curr_stack_ptr = (void**)unw.stack_ptr();
@@ -60,6 +64,9 @@ TEST(Unwind, FindSignalIterator)
   auto found_signal = false;
 
   std::size_t signal = 0xDEADBEEF;
+  std::ofstream null ("/dev/null");
+  null << &signal;
+
   for (auto it = stack.begin(); it != stack.end(); ++it)
     {
       found_signal |= (std::size_t)(*it) == signal;
@@ -75,6 +82,9 @@ TEST(Unwind, FindSignalForSyntax)
   auto found_signal = false;
 
   std::size_t signal = 0xDEADBEEF;
+  std::ofstream null ("/dev/null");
+  null << &signal;
+
   for (auto ptr : stack)
     {
       found_signal |= (std::size_t)ptr == signal;
