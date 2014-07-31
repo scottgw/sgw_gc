@@ -12,13 +12,12 @@ chunk_registry::chunk_registry ():
 void
 chunk_registry::add (chunk *chnk)
 {
-  auto ptr = chnk->data();
-  auto &chunk_ref = ptr_table [ptr];
+  auto &chunk_ref = ptr_table [chnk];
 
   chunk_ref = chnk;
   chnk->back_ptr = &chunk_ref;
 
-  m_lower = std::min(m_lower, ptr);
+  m_lower = std::min(m_lower, (void*)chnk);
   m_upper = std::max(m_upper, (void*)((char*)chnk + chnk->size()));
 }
 
