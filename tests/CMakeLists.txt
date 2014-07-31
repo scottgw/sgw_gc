@@ -4,6 +4,7 @@ set (test_names
   chunk_registry_test
   chunk_test
   bitmap_test
+  pointer_table_test
   unwind_test
   CACHE INTERNAL ""
   )
