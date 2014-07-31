@@ -38,14 +38,13 @@ alloc::allocate (std::size_t size)
 	{
 	  collect();
 	  chnk = chunk_allocate (size);
-	  if (chnk)
+	  if (!chnk)
 	    {
-	      return chnk->data();
+	      ch_alloc.grow();
+	      chnk = chunk_allocate (size);
 	    }
-	  else
-	    {
-	      return nullptr;
-	    }
+
+	  return chnk;
 	}
     }
 }
