@@ -31,6 +31,14 @@ struct chunk_allocator
       }
   }
 
+  void
+  grow ()
+  {
+    freeset.insert (chunk::create (total_allocation));
+    total_allocation *= 2;
+    number_of_allocations++;
+  }
+
   chunk*
   allocate (std::size_t size)
   {
