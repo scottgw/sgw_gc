@@ -1,6 +1,6 @@
 #include <deque>
 #include <map>
-#include <set>
+#include <unordered_set>
 #include <stdlib.h>
 
 #include "chunk_registry.hpp"
@@ -54,7 +54,7 @@ private:
   chunk_registry ch_reg;
   chunk_allocator ch_alloc;
 
-  std::set <chunk*> allocated_chunks;
+  std::unordered_set <chunk*> allocated_chunks;
 
 private:
   bool free_memory;
