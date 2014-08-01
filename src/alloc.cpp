@@ -151,7 +151,7 @@ alloc::mark_stack()
 void
 alloc::sweep()
 {
-  std::set<chunk*> to_erase;
+  std::vector<chunk*> to_erase;
   for (auto chnk : allocated_chunks)
     {
       auto base = chnk->data();
@@ -167,7 +167,7 @@ alloc::sweep()
 	    {
 	      if (size > list_objects_max_size)
 		{
-		  to_erase.insert (chnk);
+		  to_erase.push_back (chnk);
 		  ch_reg.remove (chnk);
 		  ch_alloc.free (chnk);
 		}
