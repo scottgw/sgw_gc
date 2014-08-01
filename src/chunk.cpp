@@ -6,7 +6,8 @@ chunk::create (std::size_t object_size)
   std::size_t rounded_size = chunk::rounded_size (object_size);
 
   void *ptr;
-  posix_memalign (&ptr, CHUNK_SIZE, rounded_size);
+  auto res = posix_memalign (&ptr, CHUNK_SIZE, rounded_size);
+  assert (res == 0);
 
   chunk *c = new (ptr) chunk (object_size);
 
