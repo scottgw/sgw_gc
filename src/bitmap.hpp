@@ -1,4 +1,8 @@
+#ifndef _BITMAP_HPP
+#define _BITMAP_HPP
+
 #include <vector>
+#include <cassert>
 
 struct bitmap
 {
@@ -11,6 +15,7 @@ struct bitmap
   bool
   operator [] (std::size_t pos)
   {
+    assert (pos < size);
     auto major = pos / sizeof(char);
     auto minor = pos % sizeof(char);
     return (impl [major] & (1 << minor)) != 0;
@@ -46,3 +51,5 @@ struct bitmap
 private:
   std::vector<char> impl;
 };
+
+#endif
