@@ -11,19 +11,17 @@ struct pointer_table
   chunk* &
   operator [] (void *ptr)
   {
-    std::shared_ptr<inner_map> inner;
     auto it = map.find (TOP_BITS(ptr));
     if (it == map.end())
       {
-	inner = std::make_shared<inner_map>();
-	map [TOP_BITS(ptr)] = inner;
+	auto inner = new inner_map ();
+	map [TOP_BITS(ptr)] = std::unique_ptr<inner_map>(inner);
+	return (*inner) [MID_BITS(ptr)];
       }
     else
       {
-	inner = it->second;
+	return (*it->second) [MID_BITS(ptr)];
       }
-
-    return (*inner)[MID_BITS(ptr)];
   }
 
   bool
@@ -51,7 +49,7 @@ private:
   };
 
 private:
-  std::map<std::size_t, std::shared_ptr<inner_map>> map;  
+  std::map<std::size_t, std::unique_ptr<inner_map>> map;  
 
 };
 
