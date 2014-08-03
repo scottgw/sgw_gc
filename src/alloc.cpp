@@ -68,7 +68,7 @@ alloc::free (void* ptr)
 void*
 alloc::allocate_from_list (std::size_t size, freelist &list)
 {
-  if (list.empty()) 
+  if (list.empty())
     {
       add_to_freelist (size, list);
     }
@@ -154,24 +154,28 @@ alloc::sweep()
   std::vector<chunk*> to_erase;
   for (auto chnk : allocated_chunks)
     {
-      auto base = chnk->data();
-      auto size = chnk->object_size;
-      for (auto p = (void**)base; p < chnk->end(); p += size)
-	{
-	  if (!chnk->is_marked (p))
-	    {
-	      if (size > list_objects_max_size)
-		{
-		  to_erase.push_back (chnk);
-		}
-	      else
-		{
-		  freelists[size].push_back (p);
-		}
-	    }
 
-	  chnk->clear_mark (p);
-	}      
+      // This policy means that freelist-sized objects
+      // will have their chunks returned if they are all free.
+      if (chnk->all_clear())
+	{
+	  to_erase.push_back (chnk);
+	}
+      else
+	{
+	  auto base = chnk->data();
+	  auto object_size = chnk->object_size;
+
+	  for (auto p = (void**)base; p < chnk->end(); p += object_size)
+	    {
+	      if (!chnk->is_marked (p) && object_size <= list_objects_max_size)
+		{
+		  freelists[object_size].push_back (p);
+		}
+
+	      chnk->clear_mark (p);
+	    }
+	}
     }
 
   for (auto chnk : to_erase)

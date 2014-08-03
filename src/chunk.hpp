@@ -105,6 +105,12 @@ struct chunk
   bool
   is_marked (void* ptr);
 
+  bool
+  all_clear()
+  {
+    return mark_bitmap.all_clear();
+  }
+
   void
   clear_marks()
   {

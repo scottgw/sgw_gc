@@ -21,6 +21,20 @@ struct bitmap
     return (impl [major] & (1 << minor)) != 0;
   }
 
+  bool
+  all_clear()
+  {
+    for (auto b : impl)
+      {
+	if (b != 0)
+	  {
+	    return false;
+	  }
+      }
+
+    return true;
+  }
+
   void
   set (std::size_t pos, bool b)
   {
