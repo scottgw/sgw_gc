@@ -37,7 +37,7 @@ struct chunk
 
   chunk (std::size_t object_size) :
     object_size (object_size),
-    mark_bitmap (effective_size () / object_size)
+    mark_bitmap (number_objects())
   {
   }
 
@@ -132,6 +132,13 @@ struct chunk
   std::size_t object_size;
   bitmap mark_bitmap;
   chunk **back_ptr;
+
+private:
+  int
+  ptr_to_object_idx(void *ptr)
+  {
+    return ((char*)ptr - (char*)data()) / object_size;
+  }
 };
 
 #endif

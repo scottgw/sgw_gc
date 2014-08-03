@@ -60,25 +60,23 @@ chunk::split (std::size_t new_size)
 void
 chunk::set_mark (void* ptr)
 {
-  int i = ((char*) ptr - (char*) data()) / object_size;
-  mark_bitmap.set (i, true);
+  mark_bitmap.set (ptr_to_object_idx(ptr), true);
 }
 
 
 void
 chunk::clear_mark (void* ptr)
 {
-  int i = ((char*) ptr - (char*) data()) / object_size;
-  mark_bitmap.set (i, false);
+  mark_bitmap.set (ptr_to_object_idx(ptr), false);
 }
-
 
 bool
 chunk::is_marked (void* ptr)
 {
-  int i = ((char*) ptr - (char*) data()) / object_size;
-  return mark_bitmap [i];
+  return mark_bitmap [ptr_to_object_idx(ptr)];
 }
+
+
 
 bool
 chunk::valid (void *ptr)
