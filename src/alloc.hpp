@@ -9,7 +9,7 @@
 #include "chunk_registry.hpp"
 #include "chunk_allocator.hpp"
 
-struct freelist : public std::deque<void*>
+struct freelist : public std::vector<void*>
 {
 };
 

@@ -57,7 +57,7 @@ alloc::free (void* ptr)
   auto size = chnk->object_size;
   if (size <= list_objects_max_size)
     {
-      freelists[size].push_front (ptr);
+      freelists[size].push_back (ptr);
     }
   else
     {
@@ -77,8 +77,8 @@ alloc::allocate_from_list (std::size_t size, freelist &list)
 
   if (!list.empty())
     {
-      result = list.front();
-      list.pop_front();
+      result = list.back();
+      list.pop_back();
     }
   else
     {
@@ -99,7 +99,7 @@ alloc::add_to_freelist (std::size_t size, freelist &list)
 
       for (auto p = base; p < chnk->end(); p += size)
 	{
-	  list.push_front (p);
+	  list.push_back (p);
 	}
     }
 }
@@ -158,12 +158,7 @@ alloc::sweep()
       auto size = chnk->object_size;
       for (auto p = (void**)base; p < chnk->end(); p += size)
 	{
-	  if (chnk->is_marked (p))
-	    {
-	      chnk->clear_mark (p);
-	      break;
-	    }
-	  else
+	  if (!chnk->is_marked (p))
 	    {
 	      if (size > list_objects_max_size)
 		{
@@ -171,9 +166,11 @@ alloc::sweep()
 		}
 	      else
 		{
-		  freelists[size].push_front (p);
+		  freelists[size].push_back (p);
 		}
 	    }
+
+	  chnk->clear_mark (p);
 	}      
     }
 
