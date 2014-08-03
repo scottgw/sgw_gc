@@ -1,3 +1,5 @@
+#include <future>
+#include <thread>
 #include <gtest/gtest.h>
 #include "../src/alloc.hpp"
 
@@ -78,4 +80,35 @@ TEST(Alloc, ManyAllocations)
       int *arr = (int*)allocator.allocate (256);
       arr[0] = 42;
     }
+}
+
+
+TEST(Alloc, GCSync)
+{
+  alloc allocator;
+  std::atomic<int> joined (0);
+  allocator.gc_barrier.add_new_thread();
+
+  auto other_main = [&](int dummy) {
+    allocator.gc_barrier.add_new_thread();
+    if (!allocator.gc_barrier.finished_gc && allocator.gc_barrier.join())
+      {
+	allocator.gc_barrier.finish();
+      }
+    joined++;
+  };
+  
+  auto other_thread = std::thread (other_main, 42);
+
+  allocator.gc_barrier.finished_gc = false;
+  if (!allocator.gc_barrier.finished_gc && allocator.gc_barrier.join())
+    {
+      allocator.gc_barrier.finish();
+    }
+
+  joined++;
+
+  other_thread.join();
+
+  ASSERT_EQ (joined, 2);
 }
