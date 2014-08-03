@@ -168,8 +168,6 @@ alloc::sweep()
 	      if (size > list_objects_max_size)
 		{
 		  to_erase.push_back (chnk);
-		  ch_reg.remove (chnk);
-		  ch_alloc.free (chnk);
 		}
 	      else
 		{
@@ -182,6 +180,8 @@ alloc::sweep()
   for (auto chnk : to_erase)
     {
       allocated_chunks.erase (chnk);
+      ch_reg.remove (chnk);
+      ch_alloc.free (chnk);
     }
 }
 
