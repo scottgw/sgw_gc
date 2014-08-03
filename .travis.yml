@@ -1,7 +1,9 @@
 language: cpp
 compiler:
-  - clang
   - gcc
+#  - clang
+# Removing clang for now because the build server's version of libstdc++
+# has a bug with condition_variable.
 
 install: true
 before_script:
