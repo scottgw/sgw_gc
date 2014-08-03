@@ -154,7 +154,6 @@ alloc::sweep()
   std::vector<chunk*> to_erase;
   for (auto chnk : allocated_chunks)
     {
-
       // This policy means that freelist-sized objects
       // will have their chunks returned if they are all free.
       if (chnk->all_clear())
@@ -166,7 +165,9 @@ alloc::sweep()
 	  auto base = chnk->data();
 	  auto object_size = chnk->object_size;
 
-	  for (auto p = (void**)base; p < chnk->end(); p += object_size)
+	  for (auto p = (void**)base;
+	       (char*) p + object_size < chnk->end();
+	       p += object_size)
 	    {
 	      if (!chnk->is_marked (p) && object_size <= list_objects_max_size)
 		{
