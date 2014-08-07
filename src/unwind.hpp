@@ -17,10 +17,10 @@ public:
   }
 
   inline
-  bool
+  int
   step()
   {
-    return unw_step (&cursor) > 0;
+    return unw_step (&cursor);
   }
 
   inline
@@ -44,34 +44,38 @@ public:
   {
   public:
     typedef iterator self_type;
-    iterator()
+    iterator(bool set_to_bottom = false)
     {
-      done = false;
+      unwind unw;
+
       unw.start();
       current_ptr = unw.stack_ptr();
-      unw.step();
-      next_ptr = unw.stack_ptr();
+
+      if (set_to_bottom)
+	{
+	  while (unw.step() > 0)
+	    {
+	      current_ptr = unw.stack_ptr();
+	    }
+	}
     }
 
     iterator(const iterator &other) :
-      unw (other.unw),
-      current_ptr (other.current_ptr),
-      next_ptr (other.next_ptr),
-      done (other.done)
+      current_ptr (other.current_ptr)
     {
     }
 
-    self_type operator++()         { self_type i = *this ; incr() ; return i; }
-    self_type operator++(int junk) { incr(); return *this; }
-    reference operator*() const    { return *current_ptr; }
+    self_type operator++()         { self_type i = *this ; current_ptr++ ; return i; }
+    self_type operator++(int junk) { current_ptr++; return *this; }
+    reference operator*() const    { 
+      VALGRIND_MAKE_MEM_DEFINED (current_ptr, 8);
+      return *current_ptr; 
+    }
     pointer operator ->()          { return current_ptr; }
     bool operator==(const self_type& other) const
     {
       return
-	(done && other.done) ||
-	(done == other.done && 
-	 current_ptr == other.current_ptr &&
-	 next_ptr == other.next_ptr);
+	current_ptr == other.current_ptr;
     }
     bool operator!=(const self_type& other) const { return !(*this == other); }
 
@@ -79,46 +83,22 @@ public:
     {
       if (this != &other)
 	{
-	  unw = other.unw;
 	  current_ptr = other.current_ptr;
-	  next_ptr = other.next_ptr;
-	  done = other.done;
 	}
 
       return *this;
     }
-    
-    void set_done () { done = true; }
-    bool is_done () { return done; }
+
   private:
-    void
-    incr()
-    {
-      current_ptr++;
-      if (current_ptr > next_ptr)
-	{
-	  step();
-	}
-    };
-
-    void
-    step()
-    {
-      done = !unw.step();
-      if (!done)
-	{
-	  current_ptr = next_ptr++;
-	  next_ptr = unw.stack_ptr();
-	}
-    }
-
-    unwind unw;
     pointer current_ptr;
-    pointer next_ptr;
-    bool done;
   };
 
 public:
+  unwind_stack () :
+    end_it (true)
+  {
+  }
+
   iterator
   begin()
   {
@@ -129,10 +109,11 @@ public:
   iterator
   end()
   {
-    iterator it;
-    it.set_done();
-    return it;
+    return end_it;
   }
+
+private:
+  iterator end_it;
 };
 
 #endif

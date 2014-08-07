@@ -37,20 +37,11 @@ TEST(Unwind, FindSignal)
   ASSERT_TRUE (found_signal);
 };
 
-
-TEST(Unwind, IteratorEndIsDone)
-{
-  unwind_stack stack;
-  ASSERT_TRUE (stack.end().is_done());
-}
-
-
 TEST(Unwind, IteratorBeginNotDone)
 {
   unwind_stack stack;
-  ASSERT_FALSE (stack.begin().is_done());
+  ASSERT_NE (stack.begin(), stack.end());
 }
-
 
 TEST(Unwind, IteratorBeginEndNE)
 {
