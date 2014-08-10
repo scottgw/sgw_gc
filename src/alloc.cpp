@@ -2,7 +2,8 @@
 #include "alloc.hpp"
 #include "unwind.hpp"
 
-alloc::alloc (bool free_memory) :
+alloc::alloc (void **stack_bottom, bool free_memory) :
+  stack_bottom (stack_bottom),
   list_objects_max_size (128),
   ch_alloc (free_memory),
   free_memory (free_memory)
@@ -140,11 +141,14 @@ alloc::mark (void *ptr)
 void
 alloc::mark_stack()
 {
-  unwind_stack stack;
+  unwind_stack stack (stack_bottom);
+  auto it = stack.begin();
+  auto end = stack.end();
 
-  for (auto ptr : stack)
+  for (; it != end
+	 ; ++it)
     {
-      mark (ptr);
+      mark (*it);
     }
 }
 

@@ -5,12 +5,14 @@
 
 TEST(Alloc, Create)
 {
-  alloc allocator;
+  register void **stack asm ("ebp");
+  alloc allocator(stack);
 }
 
 TEST(Alloc, SmallAllocation)
 {
-  alloc allocator;
+  register void **stack asm ("ebp");
+  alloc allocator(stack);
 
   void *ptr = allocator.allocate (32);
   ASSERT_NE (ptr, nullptr);
@@ -18,7 +20,8 @@ TEST(Alloc, SmallAllocation)
 
 TEST(Alloc, BigAllocation)
 {
-  alloc allocator;
+  register void **stack asm ("ebp");
+  alloc allocator(stack);
 
   void *ptr = allocator.allocate (1 << 13);
   ASSERT_NE (ptr, nullptr);
@@ -28,7 +31,8 @@ TEST(Alloc, BigAllocation)
 
 TEST(Alloc, DifferentAllocations)
 {
-  alloc allocator (false);
+  register void **stack asm ("ebp");
+  alloc allocator (stack, false);
 
   void *ptr1 = allocator.allocate (1 << 11);
   void *ptr2 = allocator.allocate (128);
@@ -49,7 +53,8 @@ TEST(Alloc, DifferentAllocations)
 
 TEST(Alloc, TriggerCollect)
 {
-  alloc allocator (false);
+  register void **stack asm ("ebp");
+  alloc allocator (stack, false);
 
   allocator.allocate (1 << 11);
   allocator.allocate (1 << 11);
@@ -72,7 +77,8 @@ TEST(Alloc, TriggerCollect)
 
 TEST(Alloc, ManyAllocations)
 {
-  alloc allocator;
+  register void **stack asm ("ebp");
+  alloc allocator(stack);
   auto n = 50;
 
   for (int i = 0; i < n; i++)
@@ -85,7 +91,8 @@ TEST(Alloc, ManyAllocations)
 
 TEST(Alloc, GCSync)
 {
-  alloc allocator;
+  register void **stack asm ("ebp");
+  alloc allocator(stack);
   std::atomic<int> joined (0);
   allocator.gc_barrier.add_new_thread();
 

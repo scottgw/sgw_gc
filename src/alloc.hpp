@@ -15,7 +15,7 @@ struct freelist : public std::vector<void*>
 
 class alloc {
 public:
-  alloc (bool free_memory = true);
+  alloc (void** stack_bottom, bool free_memory = true);
 
   ~alloc ();
 
@@ -37,6 +37,9 @@ private:
 
   void
   collect();
+
+private:
+  void **stack_bottom;
 
 private:
   void*
