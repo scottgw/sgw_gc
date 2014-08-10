@@ -3,7 +3,7 @@
 
 #include <iterator>
 
-#ifdef __linux__ || __APPLE __
+#if defined(__linux__) || defined(__APPLE__)
 #define UNW_LOCAL_ONLY
 #include <libunwind.h>
 class unwind
@@ -64,7 +64,7 @@ public:
 		int
 		step()
 	{
-		StackWalk64(IMAGE_FILE_MACHINE_AMD64, proc, thread, &stack, &ctx,
+		return StackWalk64(IMAGE_FILE_MACHINE_AMD64, proc, thread, &stack, &ctx,
 			NULL, NULL, NULL, NULL);
 	}
 

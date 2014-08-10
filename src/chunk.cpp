@@ -5,9 +5,13 @@ chunk::create (std::size_t object_size)
 {
   std::size_t rounded_size = chunk::rounded_size (object_size);
 
+#ifdef _WIN32
+  void *ptr = _aligned_malloc(rounded_size, CHUNK_SIZE);
+#else
   void *ptr;
   auto res = posix_memalign (&ptr, CHUNK_SIZE, rounded_size);
   assert (res == 0);
+#endif
 
   chunk *c = new (ptr) chunk (object_size);
 
@@ -34,7 +38,11 @@ void
 chunk::destroy (chunk* chunk)
 {
   chunk->~chunk();
+#ifdef _WIN32
+  _aligned_free(chunk);
+#else
   free (chunk);
+#endif
 }
 
 

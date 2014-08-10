@@ -11,7 +11,19 @@ set (test_names
 # The `CACHE INTERNAL' line  makes this variable available in the parent,
 # which is useful for running the tests from there.
 
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
+if (UNIX)
+   set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic -std=c++0x")
+endif (UNIX)
+
+if (WIN32)
+   include_directories ("C:\\Users\\scott\\gtest-1.7.0\\include")
+endif (WIN32)
+
+find_library (GTEST_LIBRARY NAMES gtest
+	      PATHS "C:\\Users\\scott\\gtest-1.7.0\\build\\Debug")
+find_library (GTEST_MAIN_LIBRARY NAMES gtest_main
+	      PATHS "C:\\Users\\scott\\gtest-1.7.0\\build\\Debug")
+
 find_package (Threads)
 include_directories (${sgw_gc_SOURCE_DIR})
 
@@ -20,6 +32,7 @@ foreach (test_name ${test_names})
   target_link_libraries (${test_name}
     sgw_gc
     ${CMAKE_THREAD_LIBS_INIT}
-    gtest
-    gtest_main)
+    ${GTEST_LIBRARY}
+    ${GTEST_MAIN_LIBRARY}
+    )
 endforeach (test_name)
