@@ -1,10 +1,11 @@
 #ifndef _UNWIND_HPP
 #define _UNWIND_HPP
 
-#define UNW_LOCAL_ONLY
-#include <libunwind.h>
 #include <iterator>
 
+#ifdef __linux__ || __APPLE __
+#define UNW_LOCAL_ONLY
+#include <libunwind.h>
 class unwind
 {
 public:
@@ -36,6 +37,51 @@ private:
   unw_context_t context;
   unw_word_t sp;
 };
+#elif defined(_WIN32)
+#include <windows.h>
+#include <DbgHelp.h>
+class unwind
+{
+public:
+	inline
+		void
+		start()
+	{
+		RtlCaptureContext(&ctx);
+		memset(&stack, 0, sizeof(STACKFRAME64));
+
+		proc = GetCurrentProcess();
+		thread = GetCurrentThread();
+		stack.AddrPC.Offset = ctx.Eip;
+		stack.AddrPC.Mode = AddrModeFlat;
+		stack.AddrStack.Offset = ctx.Esp;
+		stack.AddrStack.Mode = AddrModeFlat;
+		stack.AddrFrame.Offset = ctx.Ebp;
+		stack.AddrFrame.Mode = AddrModeFlat;
+	}
+
+	inline
+		int
+		step()
+	{
+		StackWalk64(IMAGE_FILE_MACHINE_AMD64, proc, thread, &stack, &ctx,
+			NULL, NULL, NULL, NULL);
+	}
+
+	inline
+		void**
+		stack_ptr()
+	{
+		return (void**)stack.AddrFrame.Offset;
+	}
+
+private:
+	CONTEXT ctx;
+	STACKFRAME64 stack;
+	HANDLE proc;
+	HANDLE thread;
+};
+#endif
 
 class unwind_stack
 {
@@ -68,7 +114,6 @@ public:
     self_type operator++()         { self_type i = *this ; current_ptr++ ; return i; }
     self_type operator++(int junk) { current_ptr++; return *this; }
     reference operator*() const    { 
-      VALGRIND_MAKE_MEM_DEFINED (current_ptr, 8);
       return *current_ptr; 
     }
     pointer operator ->()          { return current_ptr; }
