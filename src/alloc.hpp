@@ -68,25 +68,33 @@ private:
     barrier():
       total_threads (0),
       remaining_threads (0),
-      finished_gc (true)
+      gc_required (false)
     {
     }
 
-    bool
-    join()
+    void
+    trigger()
     {
       std::unique_lock<std::mutex> lock (mutex);
-      finished_gc = false;
-      remaining_threads--;
-      if (remaining_threads > 0)
+      if (gc_required)
 	{
-	  cv.wait (lock, [&](){ return finished_gc; });
-	  remaining_threads++;
-	  return false;
+	  join_inner(lock);
 	}
       else
 	{
-	  return true;
+	  gc_required = true;
+	  remaining_threads--;
+	  cv.wait (lock, [&]() { return remaining_threads == 0; });
+	}
+    }
+
+    void
+    join_if_required()
+    {
+      if (gc_required)
+	{
+	  std::unique_lock<std::mutex> lock (mutex);
+	  join_inner (lock);
 	}
     }
 
@@ -95,22 +103,42 @@ private:
     {
       std::unique_lock<std::mutex> lock (mutex);
       cv.notify_all();
-      finished_gc = true;
+      remaining_threads++;
+      gc_required = false;
     }
 
-    void add_new_thread ()
+    void add_thread ()
     {
       std::unique_lock<std::mutex> lock (mutex);
-      total_threads++;
-      cv.wait (lock, [&](){ return finished_gc; });
+      if (gc_required)
+	{
+	  cv.wait (lock, [&](){ return !gc_required; });
+	}
       remaining_threads++;
     }
 
+    void remove_thread ()
+    {
+      std::unique_lock<std::mutex> lock (mutex);
+      remaining_threads--;
+      cv.notify_all();
+    }
+
+
     std::atomic<int> total_threads;
     std::atomic<int> remaining_threads;
-    bool finished_gc;
-
+    bool gc_finished;
+    bool gc_required;
   private:
+    void
+    join_inner (std::unique_lock <std::mutex> &lock)
+    {
+      remaining_threads--;
+      cv.notify_all ();
+      cv.wait (lock, [&](){ return !gc_required; });
+      remaining_threads++;
+    }
+
     std::mutex mutex;
     std::condition_variable cv;
   };
