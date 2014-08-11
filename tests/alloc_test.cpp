@@ -94,19 +94,21 @@ TEST(Alloc, GCSync)
   register void **stack asm ("ebp");
   alloc allocator(stack);
   std::atomic<int> joined (0);
-  allocator.gc_barrier.add_thread();
 
-  auto other_main = [&](int dummy) {
+  auto thread_main = [&](int dummy) {
     allocator.gc_barrier.add_thread();
-    allocator.gc_barrier.trigger ();
+    if (allocator.gc_barrier.trigger ())
+      {
+	allocator.gc_barrier.finish ();
+      }
+
     joined++;
     allocator.gc_barrier.remove_thread();
   };
   
-  auto other_thread = std::thread (other_main, 42);
-  allocator.gc_barrier.trigger ();
-  joined++;
-  allocator.gc_barrier.remove_thread ();
+  auto other_thread = std::thread (thread_main, 42);
+  thread_main (43);
+
   other_thread.join();
 
   ASSERT_EQ (joined, 2);

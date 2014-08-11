@@ -66,25 +66,26 @@ private:
   struct barrier
   {
     barrier():
-      total_threads (0),
       remaining_threads (0),
       gc_required (false)
     {
     }
 
-    void
+    bool
     trigger()
     {
       std::unique_lock<std::mutex> lock (mutex);
       if (gc_required)
 	{
 	  join_inner(lock);
+	  return false;
 	}
       else
 	{
 	  gc_required = true;
 	  remaining_threads--;
 	  cv.wait (lock, [&]() { return remaining_threads == 0; });
+	  return true;
 	}
     }
 
@@ -124,11 +125,8 @@ private:
       cv.notify_all();
     }
 
-
-    std::atomic<int> total_threads;
-    std::atomic<int> remaining_threads;
-    bool gc_finished;
-    bool gc_required;
+    int remaining_threads;
+    std::atomic<bool> gc_required;
   private:
     void
     join_inner (std::unique_lock <std::mutex> &lock)
